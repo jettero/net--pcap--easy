@@ -1,0 +1,35 @@
+=head1 NAME
+
+Net::Pcap::Easy - Net::Pcap is awesome, but it's difficult to bootstrap
+
+=head1 SYNOPSIS
+
+    use Net::Pcap::Easy;
+
+    my $npe = new Net::Pcap::Easy;
+       $npe->set_filter(
+           filter           => "host 127.0.0.1 and icmp",
+           packets_per_loop => 10,
+           bytes_to_capture => 1024,
+           callback         => sub {
+               my ($
+
+               ... ther akkaka
+           },
+       );
+
+=head1 AUTHOR
+
+Paul Miller <paul@cpan.org>
+
+I am using this software in my own projects...  If you find bugs, please
+please please let me know. :) Actually, let me know if you find it handy at
+all.  Half the fun of releasing this stuff is knowing that people use it.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2007 Paul Miller -- LGPL [attached]
+
+=head1 SEE ALSO
+
+perl(1)
