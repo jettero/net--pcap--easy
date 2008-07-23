@@ -11,6 +11,11 @@ use WWW::Mechanize;
 use Test;
 plan tests => 10*2;
 
+# NOTE: there's little doubt with all the time sensitive things going on
+# here that I'll see this on the CPAN tresters reports eventually...
+
+$SIG{ALRM} = sub { exit 1 }; alarm 15;
+
 my $ppid = $$;
 if( my $kpid = fork ) {
     my $val = 1;
