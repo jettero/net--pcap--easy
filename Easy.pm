@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Net::Pcap;
 use NetPacket::Ethernet qw(:types);
-use NetPacket::IP;
+use NetPacket::IP qw(:protos);
 use NetPacket::ARP qw(:opcodes);
 use NetPacket::TCP;
 use NetPacket::UDP;
@@ -66,23 +66,33 @@ sub new {
         my $type = $ether->{type};
         my $cb;
 
-        return $this->ip4(  $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
+        return $this->ipv4(  $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
         return $this->arp(  $ether, NetPacket::ARP -> decode($ether->{data})) if $type == ETH_TYPE_ARP;
         
-        return $cb->($ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ip6_callback};
+        return $cb->($ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
         return $cb->($ether) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
         return $cb->($ether) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
         return $cb->($ether) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
+
+        return $cb->($ether) if $cb = $this->{default_callback};
     };
 
     return $this;
 }
 
-sub ip4 {
+sub ipv4 {
     my ($this, $ether, $ip) = @_;
 
     my $cb;
-    return $cb->($ether, $ip) if $cb = $this->{ip4_callback};
+    return $cb->($ether, $ip) if $cb = $this->{ipv4_callback};
+
+    my $proto = $ip->{proto};
+    return $cb->($ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
+    return $cb->($ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
+    return $cb->($ether, $ip, NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP and $cb = $this->{icmp_callback};
+    return $cb->($ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
+
+    return $cb->($ether, $ip) if $cb = $this->{default_callback};
 }
 
 sub arp {
@@ -96,6 +106,8 @@ sub arp {
     return $cb->($ether, $arp) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
     return $cb->($ether, $arp) if $op == RARP_OPCODE_REQUEST and $cb = $this->{rarpreq_callback};
     return $cb->($ether, $arp) if $op == RARP_OPCODE_REPLY   and $cb = $this->{rarpreply_callback};
+
+    return $cb->($ether, $arp) if $cb = $this->{default_callback};
 }
 
 sub loop {
