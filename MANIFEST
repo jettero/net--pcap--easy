@@ -6,3 +6,4 @@ MANIFEST
 lib/Net/Pcap/Easy.pod
 Changes
 README
+t/05_tcp_tests.t
