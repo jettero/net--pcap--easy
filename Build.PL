@@ -12,6 +12,7 @@ my $build = Module::Build->new(
         'NetPacket::IP'       => 0,
         'NetPacket::TCP'      => 0,
         'NetPacket::UDP'      => 0,
+        'NetPacket::ARP'      => 0,
         'NetPacket::ICMP'     => 0,
     }
 );

@@ -4,8 +4,9 @@ package Net::Pcap::Easy;
 use strict;
 use Carp;
 use Net::Pcap;
-use NetPacket::Ethernet;
+use NetPacket::Ethernet qw(:types);
 use NetPacket::IP;
+use NetPacket::ARP;
 use NetPacket::TCP;
 use NetPacket::UDP;
 use NetPacket::ICMP;
@@ -47,18 +48,30 @@ sub new {
        $ttl = 0 if $ttl < 0;
 
     my $snaplen = $this->{bytes_to_capture} || 1024;
-       $snaplen = $MIN_SNAPLEN unless $$MIN_SNAPLEN > 256;
+       $snaplen = $MIN_SNAPLEN unless $snaplen >= 256;
 
     my $pcap = $this->{pcap} = Net::Pcap::open_live($dev, $snaplen, $this->{promiscuous}, $ttl, \$err);
+    croak "ERROR opening pacp session: $err" if $err or not $pcap;
 
     if( my $f = $this->{filter} ) {
         my $filter;
-        Net::Pcap::compile( $pcap, \$filter, $f, 0, $netmask ) && croak 'ERROR compiling pcap filter';
+        Net::Pcap::compile( $pcap, \$filter, $f, 1, $netmask ) && croak 'ERROR compiling pcap filter';
         Net::Pcap::setfilter( $pcap, $filter ) && die 'ERROR Applying pcap filter';
     }
 
     $this->{_mcb} = sub {
         my ($user_data, $header, $packet) = @_;
+        my $ether = NetPacket::Ethernet->decode($packet);
+
+        # :types ETH_TYPE_IP ETH_TYPE_ARP ETH_TYPE_APPLETALK ETH_TYPE_SNMP ETH_TYPE_IPv6 ETH_TYPE_PPP
+
+        my $type = $ether->type;
+
+        $this->ip4(  $user_data, $ether ) if $type eq ETH_TYPE_IP;
+        $this->ip6(  $user_data, $ether ) if $type eq ETH_TYPE_IPv6;
+        $this->arp(  $user_data, $ether ) if $type eq ETH_TYPE_ARP;
+        $this->snmp( $user_data, $ether ) if $type eq ETH_TYPE_SNMP;
+        $this->ppp(  $user_data, $ether ) if $type eq ETH_TYPE_PPP;
     };
 
     return $this;
