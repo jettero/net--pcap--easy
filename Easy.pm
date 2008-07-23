@@ -2,6 +2,7 @@
 package Net::Pcap::Easy;
 
 use strict;
+use Carp;
 use Net::Pcap;
 use NetPacket::Ethernet;
 use NetPacket::IP;
@@ -30,27 +31,30 @@ sub new {
         croak "ERROR while trying to find a device: $err" unless $dev;
     }
 
-    my ($adr, $msk);
-    if (Net::Pcap::lookupnet($dev, \$adr, \$msk, \$err)) {
+    my ($addr, $netmask);
+    if (Net::Pcap::lookupnet($dev, \$addr, \$netmask, \$err)) {
         croak "ERROR finding net and netmask for $dev: $err";
 
     } else {
-        $this->{address} = $net;
-        $this->{netmask} = $msk;
+        $this->{address} = $addr;
+        $this->{netmask} = $netmask;
     }
 
     my $ppl = $this->{packets_per_loop};
        $ppl = $this->{packets_per_loop} = $DEFAULT_PPL unless defined $ppl and $ppl > 0;
 
+    my $ttl = $this->{timeout_in_ms} || 0;
+       $ttl = 0 if $ttl < 0;
+
     my $snaplen = $this->{bytes_to_capture} || 1024;
        $snaplen = $MIN_SNAPLEN unless $$MIN_SNAPLEN > 256;
 
-    my $pcap = $this->{pcap} = Net::Pcap::open_live($dev, $snaplen, $this->{promiscuous}, $to_ms, \$err)
+    my $pcap = $this->{pcap} = Net::Pcap::open_live($dev, $snaplen, $this->{promiscuous}, $ttl, \$err);
 
     if( my $f = $this->{filter} ) {
         my $filter;
-        Net::Pcap::compile( $pcap, \$filter, $f, 0, $netmask) && croak 'ERROR compiling pcap filter';
-        Net::Pcap::setfilter( $pcap, $filter) && die 'ERROR Applying pcap filter';
+        Net::Pcap::compile( $pcap, \$filter, $f, 0, $netmask ) && croak 'ERROR compiling pcap filter';
+        Net::Pcap::setfilter( $pcap, $filter ) && die 'ERROR Applying pcap filter';
     }
 
     $this->{_mcb} = sub {
