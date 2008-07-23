@@ -4,7 +4,7 @@ my $build = Module::Build->new(
     module_name       => 'Net::Pcap::Easy',
     dist_version_from => "Easy.pm",
     license           => 'lgpl',
-     pm_files         => { 'Easy.pm'  => 'lib/Net/Pcap/Easy.pm'  },
+    pm_files          => { 'Easy.pm'  => 'lib/Net/Pcap/Easy.pm'  },
     requires          => {
         'Net::Pcap'           => 0,
         'NetPacket::Ethernet' => 0,

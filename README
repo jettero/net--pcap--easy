@@ -1,0 +1,3 @@
+
+Net::Pcap does the job, but it's confusing and difficult to operate.  This
+module solves that problem in a relatively general way.

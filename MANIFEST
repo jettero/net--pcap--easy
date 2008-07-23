@@ -4,3 +4,5 @@ Makefile.PL
 t/01_load.t
 MANIFEST
 lib/Net/Pcap/Easy.pod
+Changes
+README
