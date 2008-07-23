@@ -6,17 +6,17 @@ Net::Pcap::Easy - Net::Pcap is awesome, but it's difficult to bootstrap
 
     use Net::Pcap::Easy;
 
-    my $npe = new Net::Pcap::Easy;
-       $npe->set_filter(
-           filter           => "host 127.0.0.1 and icmp",
-           packets_per_loop => 10,
-           bytes_to_capture => 1024,
-           callback         => sub {
-               my ($
+    # all arguments to new are optoinal
+    my $npe = Net::Pcap::Easy->new(
+        dev              => "lo",
+        filter           => "host 127.0.0.1 and icmp",
+        packets_per_loop => 10,
+        bytes_to_capture => 1024,
+        timeout_in_ms    => 0, # 0ms means forever
+        promiscuous      => 0, # true or false
+    );
 
-               ... ther akkaka
-           },
-       );
+    1 while $npe->loop;
 
 =head1 AUTHOR
 
