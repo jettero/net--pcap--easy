@@ -1,3 +1,7 @@
 
 Net::Pcap does the job, but it's confusing and difficult to operate.  This
 module solves that problem in a relatively general way.
+
+I wanted an way to build libpcap filters really quickly.  It shouldn't take two
+hours to crank one out, particularly since I imagine they all kinda look the
+same.  So, I wrote this to simplify writing sniffers really quickly.

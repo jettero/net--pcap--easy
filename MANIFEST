@@ -3,7 +3,8 @@ Easy.pm
 Makefile.PL
 t/01_load.t
 MANIFEST
-lib/Net/Pcap/Easy.pod
+Easy.pod
 Changes
 README
 t/05_tcp_tests.t
+META.yml
