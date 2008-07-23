@@ -18,7 +18,8 @@ our $DEFAULT_PPL = 32;
 sub DESTROY {
     my $this = shift;
 
-    Net::Pcap::close($this->{pcap});
+    my $p = delete $this->{pcap};
+    Net::Pcap::close($p) if $p;
 }
 
 sub new {

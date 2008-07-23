@@ -15,7 +15,15 @@ my $build = Module::Build->new(
         'NetPacket::UDP'      => 0,
         'NetPacket::ARP'      => 0,
         'NetPacket::ICMP'     => 0,
-    }
+    },
+    add_to_cleanup => ['device'],
 );
+
+if( my $d = ($ENV{TEST_DEVICE} || $build->prompt("device to run network tests on [default: '', skipping tests]:")) ) {
+    open my $out, ">device" or die $!;
+    print $out $d;
+    close $out;
+}
+
 $build->create_build_script;
 
