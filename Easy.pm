@@ -6,7 +6,7 @@ use Carp;
 use Net::Pcap;
 use NetPacket::Ethernet qw(:types);
 use NetPacket::IP;
-use NetPacket::ARP;
+use NetPacket::ARP qw(:opcodes);
 use NetPacket::TCP;
 use NetPacket::UDP;
 use NetPacket::ICMP;
@@ -63,18 +63,39 @@ sub new {
         my ($user_data, $header, $packet) = @_;
         my $ether = NetPacket::Ethernet->decode($packet);
 
-        # :types ETH_TYPE_IP ETH_TYPE_ARP ETH_TYPE_APPLETALK ETH_TYPE_SNMP ETH_TYPE_IPv6 ETH_TYPE_PPP
+        my $type = $ether->{type};
+        my $cb;
 
-        my $type = $ether->type;
-
-        $this->ip4(  $user_data, $ether ) if $type eq ETH_TYPE_IP;
-        $this->ip6(  $user_data, $ether ) if $type eq ETH_TYPE_IPv6;
-        $this->arp(  $user_data, $ether ) if $type eq ETH_TYPE_ARP;
-        $this->snmp( $user_data, $ether ) if $type eq ETH_TYPE_SNMP;
-        $this->ppp(  $user_data, $ether ) if $type eq ETH_TYPE_PPP;
+        return $this->ip4(  $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
+        return $this->arp(  $ether, NetPacket::ARP -> decode($ether->{data})) if $type == ETH_TYPE_ARP;
+        
+        return $cb->($ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ip6_callback};
+        return $cb->($ether) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
+        return $cb->($ether) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
+        return $cb->($ether) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
     };
 
     return $this;
+}
+
+sub ip4 {
+    my ($this, $ether, $ip) = @_;
+
+    my $cb;
+    return $cb->($ether, $ip) if $cb = $this->{ip4_callback};
+}
+
+sub arp {
+    my ($this, $ether, $arp) = @_;
+
+    my $cb;
+    return $cb->($ether, $arp) if $cb = $this->{arp_callback};
+
+    my $op = $this->{opcode};
+    return $cb->($ether, $arp) if $op ==  ARP_OPCODE_REQUEST and $cb = $this->{arpreq_callback};
+    return $cb->($ether, $arp) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
+    return $cb->($ether, $arp) if $op == RARP_OPCODE_REQUEST and $cb = $this->{rarpreq_callback};
+    return $cb->($ether, $arp) if $op == RARP_OPCODE_REPLY   and $cb = $this->{rarpreply_callback};
 }
 
 sub loop {
