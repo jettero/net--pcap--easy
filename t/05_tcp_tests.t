@@ -40,6 +40,7 @@ if( not $kpid ) {
     sleep 1 while $val;
 
     my $mech = new WWW::Mechanize;
+       $mech->agent("NPE tester");
        $mech->get("http://voltar.org/") for 1 .. $gets;
 
     exit 0;
