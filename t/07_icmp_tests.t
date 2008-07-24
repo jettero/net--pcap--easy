@@ -39,19 +39,16 @@ if( not $kpid ) {
     my $val = 1;
     $SIG{HUP} = sub { $val = 0; };
 
-    $p = Net::Ping->new;
-    for(1 .. $pings) {
-        $p->ping($host);
-    }
-    $p->close();
-
+    my $p = eval { Net::Ping->new('icmp') }; exit 0 if $@; # Net::Ping needs root, warned and described below
+       $p->ping("google.com") for 1 .. $pings;
+       $p->close;
 
     exit 0;
 }
 
 my $npe = eval { Net::Pcap::Easy->new(
     dev              => $dev,
-    filter           => "tcp and port 80",
+    filter           => "icmp",
     promiscuous      => 0,
     packets_per_loop => $pings,
 
