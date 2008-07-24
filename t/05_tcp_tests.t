@@ -47,7 +47,7 @@ if( not $kpid ) {
 
 my $npe = eval { Net::Pcap::Easy->new(
     dev              => $dev,
-    filter           => "tcp and port 80",
+    filter           => "tcp port 80",
     promiscuous      => 0,
     packets_per_loop => 10,
 
