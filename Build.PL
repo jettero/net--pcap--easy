@@ -6,6 +6,15 @@ my $build = Module::Build->new(
     license           => 'lgpl',
      pm_files         => { 'Easy.pm'  => 'lib/Net/Pcap/Easy.pm'  },
     pod_files         => { 'Easy.pod' => 'lib/Net/Pcap/Easy.pod'  },
+
+  # build_requires    => {
+        # NOTE: They have to be root *and* specify a device to run the tests on, 
+        # if they're going to get that interactive they're probably not CPAN testers anyway.
+        #
+        # 'WWW::Mechanize' => 0,
+        # 'Net::Ping'      => 0,
+  # },
+
     requires          => {
         'Net::Pcap'           => 0,
         'NetPacket::Ethernet' => 0,
@@ -17,6 +26,7 @@ my $build = Module::Build->new(
         'Net::Netmask'        => 0,
         'Socket'              => 0,
     },
+
     add_to_cleanup => ['device'],
 );
 
