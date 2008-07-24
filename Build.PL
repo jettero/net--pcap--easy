@@ -15,6 +15,8 @@ my $build = Module::Build->new(
         'NetPacket::UDP'      => 0,
         'NetPacket::ARP'      => 0,
         'NetPacket::ICMP'     => 0,
+        'Net::Netmask'        => 0,
+        'Socket'              => 0,
     },
     add_to_cleanup => ['device'],
 );

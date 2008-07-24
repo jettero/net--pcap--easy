@@ -6,8 +6,8 @@ use Net::Pcap::Easy;
 use WWW::Mechanize;
 use File::Slurp qw(slurp);
 
-use Test; my $gets = 10;
-plan tests => (my $max = $gets * 3);
+use Test; my $pings = 10;
+plan tests => (my $max = $pings * 3);
 
 # NOTE: there's little doubt with all the time sensitive things going on
 # here that I'll see this on the CPAN tresters reports eventually...
@@ -23,6 +23,13 @@ unless( $dev ) {
     skip(1, 0,0) for 1 .. $max;
     exit 0;
 }
+ 
+eval "use Net::Ping";
+if( $@ ) {
+    warn "   [skipping tests: no Net::Ping module]\n";
+    skip(1, 0,0) for 1 .. $max;
+    exit 0;
+}
 
 $SIG{ALRM} = sub { exit 1 }; alarm 15;
 
@@ -32,10 +39,12 @@ if( not $kpid ) {
     my $val = 1;
     $SIG{HUP} = sub { $val = 0; };
 
-    sleep 1 while $val;
+    $p = Net::Ping->new;
+    for(1 .. $pings) {
+        $p->ping($host);
+    }
+    $p->close();
 
-    my $mech = new WWW::Mechanize;
-       $mech->get("http://www.google.com/") for 1 .. $gets;
 
     exit 0;
 }
@@ -44,10 +53,10 @@ my $npe = eval { Net::Pcap::Easy->new(
     dev              => $dev,
     filter           => "tcp and port 80",
     promiscuous      => 0,
-    packets_per_loop => 10,
+    packets_per_loop => $pings,
 
-    tcp_callback => sub {
-        my ($npe, $ether, $ip, $tcp) = @_;
+    icmp_callback => sub {
+        my ($npe, $ether, $ip, $icmp) = @_;
 
         ok( $ip->{src_ip},  qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );
         ok( $ip->{dest_ip}, qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );

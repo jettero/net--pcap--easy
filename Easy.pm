@@ -3,7 +3,9 @@ package Net::Pcap::Easy;
 
 use strict;
 use Carp;
+use Socket;
 use Net::Pcap;
+use Net::Netmask;
 use NetPacket::Ethernet qw(:types);
 use NetPacket::IP qw(:protos);
 use NetPacket::ARP qw(:opcodes);
@@ -22,6 +24,32 @@ sub DESTROY {
     Net::Pcap::close($p) if $p;
 }
 
+sub dev {
+    my $this = shift;
+    $this->{dev}
+}
+
+sub network {
+    my $this = shift;
+
+    Socket::inet_ntoa(scalar reverse pack("l", $this->{network}));
+}
+
+sub netmask {
+    my $this = shift;
+
+    Socket::inet_ntoa(scalar reverse pack("l", $this->{netmask}));
+}
+
+sub is_local {
+    my $this = shift;
+    my $nm = $this->{nm};
+       $nm = $this->{nm} = Net::Netmask->new($this->network . "/" . $this->netmask);
+
+    my $r = eval { $nm->contains( @_ ) }; croak $@ if $@;
+    return $r;
+}
+
 sub new {
     my $class = shift;
     my $this = bless { @_ }, $class;
@@ -33,12 +61,12 @@ sub new {
         croak "ERROR while trying to find a device: $err" unless $dev;
     }
 
-    my ($addr, $netmask);
-    if (Net::Pcap::lookupnet($dev, \$addr, \$netmask, \$err)) {
+    my ($network, $netmask);
+    if (Net::Pcap::lookupnet($dev, \$network, \$netmask, \$err)) {
         croak "ERROR finding net and netmask for $dev: $err";
 
     } else {
-        $this->{address} = $addr;
+        $this->{network} = $network;
         $this->{netmask} = $netmask;
     }
 
@@ -70,12 +98,12 @@ sub new {
         return $this->ipv4(  $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
         return $this->arp(  $ether, NetPacket::ARP -> decode($ether->{data})) if $type == ETH_TYPE_ARP;
         
-        return $cb->($ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
-        return $cb->($ether) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
-        return $cb->($ether) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
-        return $cb->($ether) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
+        return $cb->($this, $ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
+        return $cb->($this, $ether) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
+        return $cb->($this, $ether) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
+        return $cb->($this, $ether) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
 
-        return $cb->($ether) if $cb = $this->{default_callback};
+        return $cb->($this, $ether) if $cb = $this->{default_callback};
     };
 
     return $this;
@@ -85,30 +113,30 @@ sub ipv4 {
     my ($this, $ether, $ip) = @_;
 
     my $cb;
-    return $cb->($ether, $ip) if $cb = $this->{ipv4_callback};
+    return $cb->($this, $ether, $ip) if $cb = $this->{ipv4_callback};
 
     my $proto = $ip->{proto};
-    return $cb->($ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
-    return $cb->($ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
-    return $cb->($ether, $ip, NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP and $cb = $this->{icmp_callback};
-    return $cb->($ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
+    return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
+    return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
+    return $cb->($this, $ether, $ip, NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP and $cb = $this->{icmp_callback};
+    return $cb->($this, $ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
 
-    return $cb->($ether, $ip) if $cb = $this->{default_callback};
+    return $cb->($this, $ether, $ip) if $cb = $this->{default_callback};
 }
 
 sub arp {
     my ($this, $ether, $arp) = @_;
 
     my $cb;
-    return $cb->($ether, $arp) if $cb = $this->{arp_callback};
+    return $cb->($this, $ether, $arp) if $cb = $this->{arp_callback};
 
     my $op = $this->{opcode};
-    return $cb->($ether, $arp) if $op ==  ARP_OPCODE_REQUEST and $cb = $this->{arpreq_callback};
-    return $cb->($ether, $arp) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
-    return $cb->($ether, $arp) if $op == RARP_OPCODE_REQUEST and $cb = $this->{rarpreq_callback};
-    return $cb->($ether, $arp) if $op == RARP_OPCODE_REPLY   and $cb = $this->{rarpreply_callback};
+    return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REQUEST and $cb = $this->{arpreq_callback};
+    return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
+    return $cb->($this, $ether, $arp) if $op == RARP_OPCODE_REQUEST and $cb = $this->{rarpreq_callback};
+    return $cb->($this, $ether, $arp) if $op == RARP_OPCODE_REPLY   and $cb = $this->{rarpreply_callback};
 
-    return $cb->($ether, $arp) if $cb = $this->{default_callback};
+    return $cb->($this, $ether, $arp) if $cb = $this->{default_callback};
 }
 
 sub loop {
