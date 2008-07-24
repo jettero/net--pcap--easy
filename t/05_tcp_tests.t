@@ -3,7 +3,6 @@
 use strict;
 use lib ("blib/lib", "blib/arch");
 use Net::Pcap::Easy;
-use WWW::Mechanize;
 use File::Slurp qw(slurp);
 
 use Test; my $gets = 10;
@@ -20,6 +19,12 @@ if( -s "device" ) {
 
 unless( $dev ) {
     warn "   [skipping tests: no device given]\n";
+    skip(1, 0,0) for 1 .. $max;
+    exit 0;
+}
+eval "use WWW::Mechanize";
+if( $@ ) {
+    warn "   [skipping tests: no WWW::Mechanize module]\n";
     skip(1, 0,0) for 1 .. $max;
     exit 0;
 }
