@@ -45,6 +45,8 @@ if( not $kpid ) {
     my $val = 1;
     $SIG{HUP} = sub { $val = 0; };
 
+    sleep 1 while $val;
+
     my $p = eval { Net::Ping->new('icmp') }; exit 0 if $@; # Net::Ping needs root, warned and described below
        $p->ping("google.com") for 1 .. $pings;
        $p->close;

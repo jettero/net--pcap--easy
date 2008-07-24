@@ -3,11 +3,10 @@
 use strict;
 use lib ("blib/lib", "blib/arch");
 use Net::Pcap::Easy;
-use WWW::Mechanize;
 use File::Slurp qw(slurp);
 
-use Test; my $pings = 10;
-plan tests => (my $max = $pings * 3);
+use Test; my $pings = 1; my $gets = 1;
+plan tests => (my $max = ($pings+$gets) * 3);
 
 # NOTE: there's little doubt with all the time sensitive things going on
 # here that I'll see this on the CPAN tresters reports eventually...
@@ -31,21 +30,42 @@ if( $@ ) {
     exit 0;
 }
 
+eval "use WWW::Mechanize";
+if( $@ ) {
+    warn "   [skipping tests: no WWW::Mechanize module]\n";
+    skip(1, 0,0) for 1 .. $max;
+    exit 0;
+}
+
 $SIG{ALRM} = sub { exit 1 }; alarm 15;
 
 my $ppid = $$;
 my $kpid = fork;
 if( not $kpid ) {
     my $val = 1;
-    $SIG{HUP} = sub { $val = 0; };
+    $SIG{HUP} = sub { $val++; };
 
-    sleep 1 while $val;
+    sleep 1 while $val == 1;
 
     my $p = eval { Net::Ping->new('icmp') }; exit 0 if $@; # Net::Ping needs root, warned and described below
-       $p->ping("voltar.org") for 1 .. $pings;
+       $p->ping("google.com") for 1 .. $pings;
        $p->close;
 
+    sleep 1 while $val == 2;
+
+    my $mech = new WWW::Mechanize;
+       $mech->agent("NPE tester");
+       $mech->get("http://voltar.org/") for 1 .. $gets;
+
     exit 0;
+}
+
+sub gcb {
+    my ($npe, $ether, $ip, $po) = @_;
+
+    ok( $ip->{src_ip},  qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );
+    ok( $ip->{dest_ip}, qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );
+    ok( $npe->is_local( $ip->{src_ip} ) or $npe->is_local( $ip->{dest_ip} ) );
 }
 
 my $npe = eval { Net::Pcap::Easy->new(
@@ -54,13 +74,7 @@ my $npe = eval { Net::Pcap::Easy->new(
     promiscuous      => 0,
     packets_per_loop => $pings,
 
-    icmp_callback => sub {
-        my ($npe, $ether, $ip, $icmp) = @_;
-
-        ok( $ip->{src_ip},  qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );
-        ok( $ip->{dest_ip}, qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );
-        ok( $npe->is_local( $ip->{src_ip} ) or $npe->is_local( $ip->{dest_ip} ) );
-    },
+    icmp_callback => \&gcb,
 )};
 
 my $skip;
@@ -73,12 +87,24 @@ if( $@ ) {
     }
 }
 
-kill 1, $kpid;
 if( $skip ) {
     warn "   [skipping tests: permission denied, try running as root]\n";
     skip(1, 0,0) for 1 .. $max;
 
 } else {
+    kill 1, $kpid;
+    $npe->loop;
+
+    kill 1, $kpid;
+    $npe = eval { Net::Pcap::Easy->new(
+        dev              => $dev,
+        filter           => "tcp port 80",
+        promiscuous      => 0,
+        packets_per_loop => $gets,
+
+        tcp_callback => \&gcb,
+    )};
+
     $npe->loop;
 }
 
