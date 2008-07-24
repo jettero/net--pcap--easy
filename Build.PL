@@ -7,13 +7,15 @@ my $build = Module::Build->new(
      pm_files         => { 'Easy.pm'  => 'lib/Net/Pcap/Easy.pm'  },
     pod_files         => { 'Easy.pod' => 'lib/Net/Pcap/Easy.pod'  },
 
-  # build_requires    => {
+    build_requires    => {
         # NOTE: They have to be root *and* specify a device to run the tests on, 
         # if they're going to get that interactive they're probably not CPAN testers anyway.
         #
         # 'WWW::Mechanize' => 0,
         # 'Net::Ping'      => 0,
-  # },
+
+        'File::Slurp' => 0, # the tests won't compile at all without this though
+    },
 
     requires          => {
         'Net::Pcap'           => 0,
