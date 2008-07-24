@@ -5,6 +5,7 @@
     - added a tcp+icmp test [10]
       - same test one def filter [11]
       - same test one ipv4 filter [11]
+    - added a tcp+icmp using two pcaps test [15]
 
 1.0: Wed Jul 23 09:45:24 EDT 2008
     - I found this stuff pretty hard to do the first time,

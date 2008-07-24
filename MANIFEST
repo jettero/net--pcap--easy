@@ -12,3 +12,4 @@ t/07_icmp_tests.t
 t/10_two_filters_one_pcap.t
 t/11_one_default_filter.t
 t/11_one_ipv4_filter.t
+t/15_two_filters_two_pcaps.t
