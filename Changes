@@ -1,8 +1,10 @@
 1.0: Wed Jul 23 18:41:34 EDT 2008
-    - built a tcp test, more trouble than you'd think... requires
+    - built a tcp test [05], more trouble than you'd think... requires
       root, my default gateway is on eth2, etc...
-    - added an icmp test
-    - added a tcp&icmp test
+    - added an icmp test [07]
+    - added a tcp+icmp test [10]
+      - same test one def filter [11]
+      - same test one ipv4 filter [11]
 
 1.0: Wed Jul 23 09:45:24 EDT 2008
     - I found this stuff pretty hard to do the first time,
