@@ -2,6 +2,7 @@
     - built a tcp test, more trouble than you'd think... requires
       root, my default gateway is on eth2, etc...
     - added an icmp test
+    - added a tcp&icmp test
 
 1.0: Wed Jul 23 09:45:24 EDT 2008
     - I found this stuff pretty hard to do the first time,

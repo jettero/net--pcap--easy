@@ -9,3 +9,4 @@ README
 t/05_tcp_tests.t
 META.yml
 t/07_icmp_tests.t
+t/10_two_filters_one_pcap.t
