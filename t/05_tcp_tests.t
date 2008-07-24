@@ -59,6 +59,7 @@ my $npe = eval { Net::Pcap::Easy->new(
         ok( $npe->is_local( $ip->{src_ip} ) or $npe->is_local( $ip->{dest_ip} ) );
     },
 )};
+
 my $skip;
 if( $@ ) {
     if( $@ =~ m/(?:permission|permitted)/i ) {
