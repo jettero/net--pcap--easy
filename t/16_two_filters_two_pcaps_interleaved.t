@@ -98,6 +98,8 @@ if( $@ ) {
 
 if( $skip ) {
     warn "   [skipping tests: permission denied, try running as root]\n";
+    kill 1, $kpid;
+    kill 1, $kpid;
     skip(1, 0,0) for 1 .. $max;
 
 } else {
