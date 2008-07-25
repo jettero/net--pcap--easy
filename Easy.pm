@@ -17,6 +17,13 @@ our $VERSION     = "1.0";
 our $MIN_SNAPLEN = 256;
 our $DEFAULT_PPL = 32;
 
+my %KNOWN_CALLBACKS = (map {($_=>1)} qw(
+    appletalk_callback arp_callback arpreply_callback arpreq_callback
+    default_callback icmp_callback igmp_callback ipv4_callback
+    ipv6_callback ppp_callback rarpreply_callback rarpreq_callback
+    snmp_callback tcp_callback udp_callback
+));
+
 sub DESTROY {
     my $this = shift;
 
@@ -68,6 +75,11 @@ sub new {
     } else {
         $this->{network} = $network;
         $this->{netmask} = $netmask;
+    }
+
+    for my $f (grep {m/_callback$/} keys %$this) {
+        croak "the $f option does not point to a CODE ref" unless ref($this->{$f}) eq "CODE";
+        warn  "the $f option is not a known callback and will never get called" unless $KNOWN_CALLBACKS{$f};
     }
 
     my $ppl = $this->{packets_per_loop};
