@@ -11,7 +11,8 @@ use NetPacket::IP qw(:protos);
 use NetPacket::ARP qw(:opcodes);
 use NetPacket::TCP;
 use NetPacket::UDP;
-use NetPacket::ICMP;
+use NetPacket::IGMP;
+use NetPacket::ICMP qw(:types);
 
 our $VERSION     = "1.0";
 our $MIN_SNAPLEN = 256;
@@ -48,10 +49,17 @@ sub netmask {
     Socket::inet_ntoa(scalar reverse pack("l", $this->{netmask}));
 }
 
-sub is_local {
+sub cidr {
     my $this = shift;
     my $nm = $this->{nm};
-       $nm = $this->{nm} = Net::Netmask->new($this->network . "/" . $this->netmask);
+       $nm = $this->{nm} = Net::Netmask->new($this->network . "/" . $this->netmask) unless $this->{nm};
+
+    $nm;
+}
+
+sub is_local {
+    my $this = shift;
+    my $nm = $this->cidr;
 
     my $r = eval { $nm->contains( @_ ) }; croak $@ if $@;
     return $r;
@@ -121,19 +129,53 @@ sub new {
     return $this;
 }
 
+sub icmp {
+    my ($this, $ether, $ip, $icmp) = @_;
+
+    my $cb;
+    my $type = $icmp->{type};
+
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ECHOREPLY     and $cb = $this->{icmpechoreply_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_UNREACH       and $cb = $this->{icmpunreach_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_SOURCEQUENCH  and $cb = $this->{icmpsourcequench_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_REDIRECT      and $cb = $this->{icmpredirect_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ECHO          and $cb = $this->{icmpecho_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ROUTERADVERT  and $cb = $this->{icmprouteradvert_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ROUTERSOLICIT and $cb = $this->{icmproutersolicit_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_TIMXCEED      and $cb = $this->{icmptimxceed_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_PARAMPROB     and $cb = $this->{icmpparamprob_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_TSTAMP        and $cb = $this->{icmptstamp_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_TSTAMPREPLY   and $cb = $this->{icmptstampreply_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_IREQ          and $cb = $this->{icmpireq_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_IREQREPLY     and $cb = $this->{icmpireqreply_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == NetPacket::ICMP::ICMP_MASKREQ() and $cb = $this->{icmpmaskreq_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_MASKREPLY     and $cb = $this->{icmpmaskreply_callback};
+
+    return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{icmp_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{ipv4_callback};
+    return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{default_callback};
+}
+
 sub ipv4 {
     my ($this, $ether, $ip) = @_;
 
     my $cb;
     my $proto = $ip->{proto};
 
+    # NOTE: this could probably be made slightly more efficient and less repeatative.
+
     return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
     return $cb->($this, $ether, $ip, NetPacket::UDP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
-    return $cb->($this, $ether, $ip, NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP and $cb = $this->{icmp_callback};
+    return $this->icmp($ether,$ip,   NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP;
     return $cb->($this, $ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
 
-    return $cb->($this, $ether, $ip) if $cb = $this->{ipv4_callback};
-    return $cb->($this, $ether, $ip) if $cb = $this->{default_callback};
+    my $spo;
+       $spo = NetPacket::TCP  -> decode($ip->{data}) if $proto == IP_PROTO_TCP;
+       $spo = NetPacket::UDP  -> decode($ip->{data}) if $proto == IP_PROTO_UDP;
+       $spo = NetPacket::IGMP -> decode($ip->{data}) if $proto == IP_PROTO_IGMP;
+
+    return $cb->($this, $ether, $ip, $spo) if $cb = $this->{ipv4_callback};
+    return $cb->($this, $ether, $ip, $spo) if $cb = $this->{default_callback};
 }
 
 sub arp {
