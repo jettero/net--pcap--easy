@@ -19,10 +19,12 @@ our $MIN_SNAPLEN = 256;
 our $DEFAULT_PPL = 32;
 
 my %KNOWN_CALLBACKS = (map {($_=>1)} qw(
-    appletalk_callback arp_callback arpreply_callback arpreq_callback
-    default_callback icmp_callback igmp_callback ipv4_callback
-    ipv6_callback ppp_callback rarpreply_callback rarpreq_callback
-    snmp_callback tcp_callback udp_callback
+    appletalk_callback arp_callback arpreply_callback arpreq_callback default_callback icmp_callback
+    icmpechoreply_callback icmpunreach_callback icmpsourcequench_callback icmpredirect_callback
+    icmpecho_callback icmprouteradvert_callback icmproutersolicit_callback icmptimxceed_callback
+    icmpparamprob_callback icmptstamp_callback icmptstampreply_callback icmpireq_callback
+    icmpireqreply_callback igmp_callback ipv4_callback ipv6_callback ppp_callback rarpreply_callback
+    rarpreq_callback snmp_callback tcp_callback udp_callback
 ));
 
 sub DESTROY {
