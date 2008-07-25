@@ -107,7 +107,7 @@ sub new {
         my $type = $ether->{type};
         my $cb;
 
-        return $this->ipv4(  $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
+        return $this->ipv4( $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
         return $this->arp(  $ether, NetPacket::ARP -> decode($ether->{data})) if $type == ETH_TYPE_ARP;
         
         return $cb->($this, $ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
