@@ -128,7 +128,7 @@ sub ipv4 {
     my $proto = $ip->{proto};
 
     return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
-    return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
+    return $cb->($this, $ether, $ip, NetPacket::UDP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
     return $cb->($this, $ether, $ip, NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP and $cb = $this->{icmp_callback};
     return $cb->($this, $ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
 
