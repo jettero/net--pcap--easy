@@ -125,14 +125,14 @@ sub ipv4 {
     my ($this, $ether, $ip) = @_;
 
     my $cb;
-    return $cb->($this, $ether, $ip) if $cb = $this->{ipv4_callback};
-
     my $proto = $ip->{proto};
+
     return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
     return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
     return $cb->($this, $ether, $ip, NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP and $cb = $this->{icmp_callback};
     return $cb->($this, $ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
 
+    return $cb->($this, $ether, $ip) if $cb = $this->{ipv4_callback};
     return $cb->($this, $ether, $ip) if $cb = $this->{default_callback};
 }
 
@@ -140,14 +140,14 @@ sub arp {
     my ($this, $ether, $arp) = @_;
 
     my $cb;
-    return $cb->($this, $ether, $arp) if $cb = $this->{arp_callback};
-
     my $op = $this->{opcode};
+
     return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REQUEST and $cb = $this->{arpreq_callback};
     return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
     return $cb->($this, $ether, $arp) if $op == RARP_OPCODE_REQUEST and $cb = $this->{rarpreq_callback};
     return $cb->($this, $ether, $arp) if $op == RARP_OPCODE_REPLY   and $cb = $this->{rarpreply_callback};
 
+    return $cb->($this, $ether, $arp) if $cb = $this->{arp_callback};
     return $cb->($this, $ether, $arp) if $cb = $this->{default_callback};
 }
 
