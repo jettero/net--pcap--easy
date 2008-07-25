@@ -148,6 +148,8 @@ sub icmp {
     return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_TSTAMPREPLY   and $cb = $this->{icmptstampreply_callback};
     return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_IREQ          and $cb = $this->{icmpireq_callback};
     return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_IREQREPLY     and $cb = $this->{icmpireqreply_callback};
+
+    # NOTE: MASKREQ is exported as MASREQ ... grrz: http://rt.cpan.org/Ticket/Display.html?id=37931
     return $cb->($this, $ether, $ip, $icmp) if $type == NetPacket::ICMP::ICMP_MASKREQ() and $cb = $this->{icmpmaskreq_callback};
     return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_MASKREPLY     and $cb = $this->{icmpmaskreply_callback};
 
