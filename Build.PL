@@ -32,7 +32,9 @@ my $build = Module::Build->new(
     add_to_cleanup => ['device'],
 );
 
-if( my $d = ($ENV{TEST_DEVICE} || $build->prompt("device to run network tests on [default: '', skipping tests]:")) ) {
+if( my $d = ($ENV{TEST_DEVICE} || $build->prompt("device to run network tests on [default: 'skip']:", "skip")) ) {
+    $d = '' if $d eq "skip";
+
     open my $out, ">device" or die $!;
     print $out $d;
     close $out;

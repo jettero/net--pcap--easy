@@ -1,3 +1,7 @@
+1.1: Mon Jul 28 06:42:14 EDT 2008
+    - error in the Build.PL, must set default for prompt() so the
+      smokers don't get an error.
+
 1.0: Wed Jul 23 18:41:34 EDT 2008
     - built a tcp test [05], more trouble than you'd think... requires
       root, my default gateway is on eth2, etc...
