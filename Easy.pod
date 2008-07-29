@@ -22,7 +22,7 @@ Net::Pcap::Easy - Net::Pcap is awesome, but it's difficult to bootstrap
         },
     );
 
-    1 while $npe->loop;
+    $npe->loop while 1;
 
 =head1 DESCRIPTION
 
