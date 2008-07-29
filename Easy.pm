@@ -200,7 +200,10 @@ sub arp {
 sub loop {
     my $this = shift;
 
-    Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $this->{_mcb}, "user data");
+    my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $this->{_mcb}, "user data");
+
+    return unless $ret == 0;
+    return 1;
 }
 
 "true";

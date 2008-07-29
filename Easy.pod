@@ -22,7 +22,7 @@ Net::Pcap::Easy - Net::Pcap is awesome, but it's difficult to bootstrap
         },
     );
 
-    $npe->loop while 1;
+    1 while $npe->loop;
 
 =head1 DESCRIPTION
 
@@ -73,6 +73,8 @@ for details on this.
 Call this over and over until your program is done listening.  It collects a
 number of packets equal to C<packets_per_loop> (see below) and passes each
 packet, one at a time, to any callbacks you've specified (see below).
+
+This returns 1 if the count of packets was reached and returns () otherwise.
 
 =item C<new()>
 
