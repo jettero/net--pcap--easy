@@ -182,7 +182,7 @@ object.
 Example:
 
     tcp_callback = sub {
-        my ($npe, $ether, $tcp) = @_;
+        my ($npe, $ether, $ip, $tcp) = @_;
 
         print "TCP: $ip->{src_ip}:$tcp->{src_port} -> $ip->{dest_ip}:$tcp->{dest_port}\n";
         print "\t$ether->{src_mac} -> $ether->{dest_mac}\n" if $SHOW_MAC;
