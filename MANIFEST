@@ -1,6 +1,5 @@
 Build.PL
 Easy.pm
-Makefile.PL
 t/01_load.t
 MANIFEST
 Easy.pod
