@@ -3,7 +3,6 @@
 use strict;
 use lib ("blib/lib", "blib/arch");
 use Net::Pcap::Easy;
-use WWW::Mechanize;
 use File::Slurp qw(slurp);
 
 use Test; my $pings = 10;
