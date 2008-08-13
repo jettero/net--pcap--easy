@@ -42,7 +42,7 @@ sub get_dev {
     return '' if $ENV{PERL_MM_USE_DEFAULT}; # stolen from Module::Build
 
     my $d = <STDIN>; chomp $d;
-       $d = '' if $d =~ m/skip/i/;
+       $d = '' if $d =~ m/skip/i;
 
     return $d || '';
 }
