@@ -1,4 +1,4 @@
-Build.PL
+Makefile.PL
 Easy.pm
 t/01_load.t
 MANIFEST
