@@ -38,7 +38,11 @@ sub get_dev {
     local $| = 1;
     print "network device on which to run tests (must be root) [e.g. eth0, default: skip]: ";
 
-    my $d = <STDIN>; chomp $d;
+    return '' unless -t STDIN && (-t STDOUT || !(-f STDOUT || -c STDOUT)) ;   # Pipe? stolen from Module::Build
+    return '' if $ENV{PERL_MM_USE_DEFAULT}; # stolen from Module::Build
 
-    return $d;
+    my $d = <STDIN>; chomp $d;
+       $d = '' if $d =~ m/skip/i/;
+
+    return $d || '';
 }

@@ -1,3 +1,6 @@
+1.32: Wed Aug 13 13:49:19 EDT 2008
+    - woops, 'skip' device fails tests...
+
 1.31: Wed Aug 13 07:21:36 EDT 2008
     - I dislike module::build, removed
 
