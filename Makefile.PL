@@ -25,6 +25,18 @@ WriteMakefile(
         'Socket'              => 0,
     },
 
+    ($ExtUtils::MakeMaker::VERSION ge '6.48'? 
+        (MIN_PERL_VERSION => 5.008,
+            META_MERGE => {
+                keywords => ['pcap', 'sniffer'],
+                resources=> {
+                    repository => 'http://github.com/jettero/net--pcap--easy/tree',
+                },
+            },
+
+        LICENSE	=> 'lgpl2',
+    ) : ()),
+
     clean => { FILES => 'device' },
 );
 
