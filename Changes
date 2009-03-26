@@ -1,5 +1,6 @@
 1.322: Thu Mar 26 06:36:05 EDT 2009
    - There were a bunch of documentation bugs.
+   - I fixed some lousy Makefile.PL code
 
 1.321: Wed Mar 25 20:54:13 EDT 2009
    - added chorny's META.yml stuff
