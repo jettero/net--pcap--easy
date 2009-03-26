@@ -40,21 +40,9 @@ WriteMakefile(
     clean => { FILES => 'device' },
 );
 
-my $dev = $ENV{TEST_DEVICE} || &get_dev;
+my $dev = $ENV{TEST_DEVICE}
+       || prompt( "network device on which to run tests (e.g., eth0, must be root): ", "skip");
 
-open OUT, ">device" or die $!;
-print OUT $dev;
-close OUT;
-
-sub get_dev {
-    local $| = 1;
-    print "network device on which to run tests (must be root) [e.g. eth0, default: skip]: ";
-
-    return '' unless -t STDIN && (-t STDOUT || !(-f STDOUT || -c STDOUT)) ;   # Pipe? stolen from Module::Build
-    return '' if $ENV{PERL_MM_USE_DEFAULT}; # stolen from Module::Build
-
-    my $d = <STDIN>; chomp $d;
-       $d = '' if $d =~ m/skip/i;
-
-    return $d || '';
-}
+open my $dh, ">", "device" or die $!;
+print $dh $dev;
+close $dh;
