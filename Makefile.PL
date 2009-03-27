@@ -42,6 +42,7 @@ WriteMakefile(
 
 my $dev = $ENV{TEST_DEVICE}
        || prompt( "network device on which to run tests (e.g., eth0, must be root): ", "skip");
+   $dev = "" if $dev =~ m/skip/;
 
 open my $dh, ">", "device" or die $!;
 print $dh $dev;
