@@ -1,3 +1,7 @@
+1.325: Fri Mar 27 18:28:59 EDT 2009
+   - gah, bug in the Makefile.PL, noticed it when I installed on
+     my new server.
+
 1.322: Thu Mar 26 06:36:05 EDT 2009
    - There were a bunch of documentation bugs.
    - I fixed some lousy Makefile.PL code

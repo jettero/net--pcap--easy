@@ -14,7 +14,7 @@ use NetPacket::UDP;
 use NetPacket::IGMP;
 use NetPacket::ICMP qw(:types);
 
-our $VERSION     = 1.322;
+our $VERSION     = 1.325;
 our $MIN_SNAPLEN = 256;
 our $DEFAULT_PPL = 32;
 
