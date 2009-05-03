@@ -30,11 +30,11 @@ WriteMakefile(
             META_MERGE => {
                 keywords => ['pcap', 'sniffer'],
                 resources=> {
-                    repository => 'http://github.com/jettero/net--pcap--easy/tree',
+                    repository => 'http://github.com/jettero/net--pcap--easy/',
                 },
             },
 
-        LICENSE	=> 'lgpl2',
+        LICENSE	=> 'LGPL',
     ) : ()),
 
     clean => { FILES => 'device' },
