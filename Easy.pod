@@ -358,10 +358,10 @@ Example:
 
 =head1 AUTHOR
 
-Paul Miller <jettero@cpan.org>
+Paul Miller C<< <jettero@cpan.org> >>
 
 I am using this software in my own projects...  If you find bugs, please
-please please let me know. :) Actually, let me know if you find it handy at
+please please let me know.  Actually, let me know if you find it handy at
 all.  Half the fun of releasing this stuff is knowing that people use it.
 
 If you see anything wrong with the callbacks, the docs, or anything:  Definitely
