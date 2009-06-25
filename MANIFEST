@@ -1,3 +1,4 @@
+.perlcriticrc
 .todo
 Changes
 Easy.pm
@@ -14,3 +15,6 @@ t/11_one_ipv4_filter.t
 t/15_two_filters_two_pcaps.t
 t/16_two_filters_two_pcaps_interleaved.t
 t/16_two_filters_two_pcaps_serialized.t
+t/critic.t
+t/pod.t
+t/pod_coverage.t
