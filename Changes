@@ -1,6 +1,7 @@
 1.325: Thu Jun 25 21:05:37 EDT 2009
    - made {pcap} and {netmask} into accessor functions (get_pcap,
      etc) and altered pods
+   - got the pods to pass t/pod.t
 
 1.325: Thu Jun 25 08:41:37 EDT 2009
    - adding patch from andk
