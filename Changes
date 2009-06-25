@@ -1,3 +1,7 @@
+1.325: Thu Jun 25 08:41:37 EDT 2009
+   - adding patch from andk
+   - made sure this works under 5.6.1
+
 1.325: Fri Mar 27 18:28:59 EDT 2009
    - gah, bug in the Makefile.PL, noticed it when I installed on
      my new server.
