@@ -94,7 +94,7 @@ the device.
 
 The options can only be specified as arguments to the C<new()> method.
 
-=over the options
+=over 4
 
 =item C<dev>
 
@@ -173,7 +173,7 @@ If a packet would match multiple callbacks it will try to call the most specific
 match first (whatever that might mean).  The callbacks are listed in order of
 preference.
 
-=over The IPv4 Callbacks:
+=over 4
 
 =item C<tcp_callback>
 
@@ -272,7 +272,9 @@ C<rarpreply_callback>, C<rarpreq_callback>
 
 =back
 
-=over Other Callbacks:
+=head1 OTHER_CALLBACKS
+
+=over 4
 
 =item C<ipv6_callback>
 
@@ -312,7 +314,9 @@ this callback gets only the C<NetPacket::Ethernet> object.
 
 =back
 
-=over The Default Callback:
+=head1 DEFAULT CALLBACK
+
+=over 4
 
 =item C<default_callback>
 
