@@ -46,7 +46,9 @@ wrapper that makes everything perl-esque.
 There are a couple convenience functions available, two control functions, and
 various blessed-hash keys at your disposal.
 
-=over The methods
+=head1 METHODS
+
+=over 4
 
 =item C<dev()>
 
@@ -81,23 +83,6 @@ This returns 1 if the count of packets was reached and returns () otherwise.
 =item C<new()>
 
 The details are in the L<OPTIONS|/OPTIONS> section below.
-
-=back
-
-=over The hash values
-
-=item C<{pcap}>
-
-This is the actual pcap reference.  You can pass it to L<Net::Pcap> functions if
-you wish.
-
-=item C<{network}>
-
-This is the long (see L<pack>'s "l") value of the network.
-
-=item C<{netmask}>
-
-This is the long (see L<pack>'s "l") value of the netmask.
 
 =back
 
