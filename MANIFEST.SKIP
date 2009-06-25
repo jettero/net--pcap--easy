@@ -6,3 +6,4 @@ Makefile.PL
 blib
 device
 sudo_and_test.sh
+.st
