@@ -57,7 +57,8 @@ sub new {
         $this->{netmask} ||= undef;
 
     } else {
-        my $dev = ($this->{dev});
+        my $dev = $this->{dev};
+
         unless( $dev ) {
             $dev = $this->{dev} = Net::Pcap::lookupdev(\$err);
             croak "ERROR while trying to find a device: $err" unless $dev;
@@ -77,14 +78,16 @@ sub new {
             warn  "the $f option is not a known callback and will never get called" unless $KNOWN_CALLBACKS{$f};
         }
         my $ppl = $this->{packets_per_loop};
-        $ppl = $this->{packets_per_loop} = $DEFAULT_PPL unless defined $ppl and $ppl > 0;
+           $ppl = $this->{packets_per_loop} = $DEFAULT_PPL unless defined $ppl and $ppl > 0;
 
         my $ttl = $this->{timeout_in_ms} || 0;
-        $ttl = 0 if $ttl < 0;
+           $ttl = 0 if $ttl < 0;
 
         my $snaplen = $this->{bytes_to_capture} || 1024;
-        $snaplen = $MIN_SNAPLEN unless $snaplen >= 256;
+           $snaplen = $MIN_SNAPLEN unless $snaplen >= 256;
+
         $pcap = $this->{pcap} = Net::Pcap::open_live($dev, $snaplen, $this->{promiscuous}, $ttl, \$err);
+
         croak "ERROR opening pacp session: $err" if $err or not $pcap;
     }
 
