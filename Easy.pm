@@ -123,8 +123,8 @@ sub new {
         my $type = $ether->{type};
         my $cb;
 
-        return $this->ipv4( $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
-        return $this->arp(  $ether, NetPacket::ARP -> decode($ether->{data})) if $type == ETH_TYPE_ARP;
+        return $this->_ipv4( $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
+        return $this->_arp(  $ether, NetPacket::ARP -> decode($ether->{data})) if $type == ETH_TYPE_ARP;
         
         return $cb->($this, $ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
         return $cb->($this, $ether) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
@@ -137,7 +137,7 @@ sub new {
     return $this;
 }
 
-sub icmp {
+sub _icmp {
     my ($this, $ether, $ip, $icmp) = @_;
 
     my $cb;
@@ -166,7 +166,7 @@ sub icmp {
     return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{default_callback};
 }
 
-sub ipv4 {
+sub _ipv4 {
     my ($this, $ether, $ip) = @_;
 
     my $cb;
@@ -176,7 +176,7 @@ sub ipv4 {
 
     return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
     return $cb->($this, $ether, $ip, NetPacket::UDP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
-    return $this->icmp($ether,$ip,   NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP;
+    return $this->_icmp($ether,$ip,  NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP;
     return $cb->($this, $ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
 
     my $spo;
@@ -188,7 +188,7 @@ sub ipv4 {
     return $cb->($this, $ether, $ip, $spo) if $cb = $this->{default_callback};
 }
 
-sub arp {
+sub _arp {
     my ($this, $ether, $arp) = @_;
 
     my $cb;
