@@ -1,8 +1,11 @@
-1.325: Thu Jun 25 21:05:37 EDT 2009
+1.4000: Thu Jun 25 16:00:00 EDT 2009
    - made {pcap} and {netmask} into accessor functions (get_pcap,
      etc) and altered pods
    - got the pods to pass t/pod.t
    - t/pod_coverage.t passes
+   - got t/critic.t to pass
+   - renamed and moved a few things.
+
 
 1.325: Thu Jun 25 08:41:37 EDT 2009
    - adding patch from andk
