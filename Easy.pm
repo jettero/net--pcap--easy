@@ -76,6 +76,7 @@ sub new {
     if ($pcap = $this->{pcap}) {
         $this->{network} ||= undef;
         $this->{netmask} ||= undef;
+
     } else {
         my $dev = ($this->{dev});
         unless( $dev ) {
