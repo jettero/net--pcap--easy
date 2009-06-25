@@ -147,6 +147,12 @@ requested PPL.
 This is a boolean value (in the perl sense) indicating whether you wish to
 capture packets not intended for the listening interface.  The default is false.
 
+=item C<pcap>
+
+You can optionally build the L<Net::Pcap> object yourself.  Presumably you have
+something custom in mind if you choose to do this.  Choosing to do this will
+disable various features (like populating the network and netmask fields);
+
 =item C<*_callback>
 
 The captured packets are passed to code refs.  There are a variety of callback
