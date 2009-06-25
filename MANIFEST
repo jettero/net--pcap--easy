@@ -6,6 +6,8 @@ Easy.pod
 MANIFEST
 Makefile.PL
 README
+eth0.data
+lo.data
 t/01_load.t
 t/05_tcp_tests.t
 t/07_icmp_tests.t
@@ -18,4 +20,3 @@ t/16_two_filters_two_pcaps_serialized.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
-test.data
