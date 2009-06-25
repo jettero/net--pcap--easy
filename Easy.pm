@@ -212,4 +212,8 @@ sub loop {
     return 1;
 }
 
-"true";
+sub get_pcap    { $_[0]->{pcap} }
+sub get_network { $_[0]->{network} }
+sub get_netmask { $_[0]->{netmask} }
+
+1;

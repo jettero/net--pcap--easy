@@ -142,6 +142,29 @@ This is covered in more detail below.
 
 =back
 
+=head1 OBJECT ACCESSORS
+
+There are a number of values you may wish to pull from the L<Net::Pcap::Easy>
+object.  Arguably these should be proper accessors.
+
+=over 4
+
+=item C<get_pcap()>
+
+This returns the actual L<Net::Pcap> reference.  If you need to call a function
+from L<Net::Pcap> that requires a pcap object argument, this would be the object
+to pass.
+
+=item C<get_network()>
+
+This is the long (see L<pack|perlfunc/pack>'s "l") value of the network.
+
+=item C<get_netmask()>
+
+This is the long (see L<pack|perlfunc/pack>'s "l") value of the netmask.
+
+=back
+
 =head1 CALLBACKS
 
 Only one callback will get called for each packet.
