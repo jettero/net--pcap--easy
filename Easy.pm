@@ -88,7 +88,6 @@ sub new {
         croak "ERROR opening pacp session: $err" if $err or not $pcap;
     }
 
-
     if( my $f = $this->{filter} ) {
         my $filter;
         Net::Pcap::compile( $pcap, \$filter, $f, 1, $this->{netmask} ) && croak 'ERROR compiling pcap filter';
