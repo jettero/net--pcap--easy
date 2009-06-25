@@ -2,6 +2,7 @@
    - made {pcap} and {netmask} into accessor functions (get_pcap,
      etc) and altered pods
    - got the pods to pass t/pod.t
+   - t/pod_coverage.t passes
 
 1.325: Thu Jun 25 08:41:37 EDT 2009
    - adding patch from andk
