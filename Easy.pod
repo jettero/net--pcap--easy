@@ -54,6 +54,12 @@ various blessed-hash keys at your disposal.
 
 Returns the name of the device you're sniffing.
 
+=item C<pcap()>
+
+This returns the actual L<Net::Pcap> reference.  If you need to call a function
+from L<Net::Pcap> that requires a pcap object argument, this would be the object
+to pass.
+
 =item C<network()>
 
 Returns the network the device is on (as a text ip number, e.g., 192.168.1.0).
@@ -65,6 +71,14 @@ Returns the netmask of the device (as a text ip number, e.g., 255.255.255.0).
 =item C<cidr()>
 
 Returns the network of the device as a L<Net::Netmask> object, which string-interpolates to CIDR notation.
+
+=item C<raw_network()>
+
+This is the long (see L<pack|perlfunc/pack>'s "l") value of the network.
+
+=item C<raw_netmask()>
+
+This is the long (see L<pack|perlfunc/pack>'s "l") value of the netmask.
 
 =item C<is_local($ip_or_network)>
 
@@ -139,29 +153,6 @@ The captured packets are passed to code refs.  There are a variety of callback
 types to choose from.  Each callback must be a code ref.
 
 This is covered in more detail below.
-
-=back
-
-=head1 OBJECT ACCESSORS
-
-There are a number of values you may wish to pull from the L<Net::Pcap::Easy>
-object.  Arguably these should be proper accessors.
-
-=over 4
-
-=item C<get_pcap()>
-
-This returns the actual L<Net::Pcap> reference.  If you need to call a function
-from L<Net::Pcap> that requires a pcap object argument, this would be the object
-to pass.
-
-=item C<get_network()>
-
-This is the long (see L<pack|perlfunc/pack>'s "l") value of the network.
-
-=item C<get_netmask()>
-
-This is the long (see L<pack|perlfunc/pack>'s "l") value of the netmask.
 
 =back
 

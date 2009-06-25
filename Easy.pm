@@ -2,6 +2,8 @@
 package Net::Pcap::Easy;
 
 use strict;
+use warnings;
+
 use Carp;
 use Socket;
 use Net::Pcap;
@@ -32,31 +34,8 @@ sub DESTROY {
 
     my $p = delete $this->{pcap};
     Net::Pcap::close($p) if $p;
-}
 
-sub dev {
-    my $this = shift;
-    $this->{dev}
-}
-
-sub network {
-    my $this = shift;
-
-    Socket::inet_ntoa(scalar reverse pack("l", $this->{network}));
-}
-
-sub netmask {
-    my $this = shift;
-
-    Socket::inet_ntoa(scalar reverse pack("l", $this->{netmask}));
-}
-
-sub cidr {
-    my $this = shift;
-    my $nm = $this->{nm};
-       $nm = $this->{nm} = Net::Netmask->new($this->network . "/" . $this->netmask) unless $this->{nm};
-
-    $nm;
+    return;
 }
 
 sub is_local {
@@ -164,6 +143,8 @@ sub _icmp {
     return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{icmp_callback};
     return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{ipv4_callback};
     return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{default_callback};
+
+    return;
 }
 
 sub _ipv4 {
@@ -186,6 +167,8 @@ sub _ipv4 {
 
     return $cb->($this, $ether, $ip, $spo) if $cb = $this->{ipv4_callback};
     return $cb->($this, $ether, $ip, $spo) if $cb = $this->{default_callback};
+
+    return;
 }
 
 sub _arp {
@@ -201,6 +184,8 @@ sub _arp {
 
     return $cb->($this, $ether, $arp) if $cb = $this->{arp_callback};
     return $cb->($this, $ether, $arp) if $cb = $this->{default_callback};
+
+    return;
 }
 
 sub loop {
@@ -212,8 +197,30 @@ sub loop {
     return 1;
 }
 
-sub get_pcap    { $_[0]->{pcap} }
-sub get_network { $_[0]->{network} }
-sub get_netmask { $_[0]->{netmask} }
+sub pcap        { return $_[0]->{pcap} }
+sub raw_network { return $_[0]->{network} }
+sub raw_netmask { return $_[0]->{netmask} }
+sub dev         { return $_[0]->{dev} }
+
+sub network {
+    my $this = shift;
+
+    return Socket::inet_ntoa(scalar reverse pack("l", $this->{network}));
+}
+
+sub netmask {
+    my $this = shift;
+
+    return Socket::inet_ntoa(scalar reverse pack("l", $this->{netmask}));
+}
+
+sub cidr {
+    my $this = shift;
+    my $nm = $this->{nm};
+       $nm = $this->{nm} = Net::Netmask->new($this->network . "/" . $this->netmask) unless $this->{nm};
+
+    return $nm;
+}
+
 
 1;
