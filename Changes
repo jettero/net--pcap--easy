@@ -10,6 +10,8 @@
      number of processed packets (in cases where there was no
      error) -- and undef or () when there was an error.
    - added the new dev=>"file:lo.data" format to the pod
+   - added the dev=>"file:lo.data" test (t/31_)
+   - added the dev=>"file:eth0.data" test (t/31_)
 
 1.325: Thu Jun 25 08:41:37 EDT 2009
    - adding patch from andk
