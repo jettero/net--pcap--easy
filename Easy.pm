@@ -183,7 +183,7 @@ sub _arp {
     my ($this, $ether, $arp) = @_;
 
     my $cb;
-    my $op = $this->{opcode};
+    my $op = $arp->{opcode};
 
     return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REQUEST and $cb = $this->{arpreq_callback};
     return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
