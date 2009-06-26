@@ -105,6 +105,8 @@ sub new {
         my ($user_data, $header, $packet) = @_;
         my $ether = NetPacket::Ethernet->decode($packet);
 
+        $this->{_pp} ++;
+
         my $type = $ether->{type};
         my $cb;
 
@@ -200,7 +202,7 @@ sub loop {
     my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $this->{_mcb}, "user data");
 
     return unless $ret == 0;
-    return 1;
+    return delete $this->{_pp}; # return the number of processed packets.
 }
 
 sub pcap        { return $_[0]->{pcap} }

@@ -89,10 +89,14 @@ for details on this.
 =item C<loop()>
 
 Call this over and over until your program is done listening.  It collects a
-number of packets equal to C<packets_per_loop> (see below) and passes each
-packet, one at a time, to any callbacks you've specified (see below).
+number of packets equal to L</packets_per_loop> (see below) and passes each
+packet one at a time to any callbacks you've specified (see below).
 
-This returns 1 if the count of packets was reached and returns () otherwise.
+The function returns the number of packets processed (normally the same as
+L</packets_per_loop>), and therefore less than L</packets_per_loop> or 0 at the
+end of a packet file.
+
+It returns the empty list or the undef value in the case of an error.
 
 =item C<new()>
 
@@ -116,6 +120,32 @@ The device you wish to listen on, eth0, "Local Area Connection," etc.  It's a
 good idea to specify this device, but if you don't, L<Net::Pcap::Easy> will
 attempt to locate it with L<Net::Pcap>'s C<lookupdev()> method.  Odds are good
 that it won't find the device you want, your mileage may vary.
+
+    my $npe = Net::Pcap::Easy->new(
+        dev              => "eth0",
+        filter           => "icmp",
+        packets_per_loop => 10,
+
+        icmp_callback => sub { warn "ping or something!\n" },
+    );
+
+    1 while $npe->loop; # loop() returns 10, 10, 10, until you hit ^C
+    exit 0;
+
+If passed a special filename, C<"file:/path/name">, L<Net::Pcap::Easy> will try
+to open that file and read it as the device.  This will break functions like
+L</network>, L</netmask> and the raw versions -- their results are undefined.
+
+    bash$ tcpdump -c 6 -i lo -w lo.data
+
+    my $npe = Net::Pcap::Easy->new(
+        dev              => "file:./lo.data",
+        packets_per_loop => 3,
+        icmp_callback => sub { warn "ping or something!\n" },
+    );
+
+    1 while $npe->loop; # loop() returns 3 twice, then a 0
+    exit 0;
 
 =item C<packets_per_loop> 
 
