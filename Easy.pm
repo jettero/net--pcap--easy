@@ -202,7 +202,7 @@ sub loop {
     my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $this->{_mcb}, "user data");
 
     return unless $ret == 0;
-    return delete $this->{_pp}; # return the number of processed packets.
+    return (delete $this->{_pp}) || 0; # return the number of processed packets.
 }
 
 sub pcap        { return $_[0]->{pcap} }

@@ -22,8 +22,8 @@ my $npe = Net::Pcap::Easy->new(
 );
 
 ok( $npe->loop, 3 ) for 1 .. 2;
-ok( $npe->loop, undef );
-ok( $npe->loop, undef );
+ok( $npe->loop, 0 );
+ok( $npe->loop, 0 );
 
 __END__
 bash$ tcpdump -nr ../lo.data 
