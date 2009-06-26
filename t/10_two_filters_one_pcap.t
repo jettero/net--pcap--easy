@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
 use strict;
-use lib ("blib/lib", "blib/arch");
 use Net::Pcap::Easy;
 use File::Slurp qw(slurp);
 
