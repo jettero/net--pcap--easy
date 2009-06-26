@@ -17,7 +17,8 @@ t/11_one_ipv4_filter.t
 t/15_two_filters_two_pcaps.t
 t/16_two_filters_two_pcaps_interleaved.t
 t/16_two_filters_two_pcaps_serialized.t
+t/31_replay_eth0.t
+t/31_replay_lo.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
-t/31_replay_lo.t
