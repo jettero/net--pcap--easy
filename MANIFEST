@@ -20,3 +20,4 @@ t/16_two_filters_two_pcaps_serialized.t
 t/critic.t
 t/pod.t
 t/pod_coverage.t
+t/31_replay_lo.t
