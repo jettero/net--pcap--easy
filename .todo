@@ -5,12 +5,12 @@
     <note priority="medium" time="1216934250" done="1217006961">
         this needs documentation
     </note>
-    <note priority="veryhigh" time="1245964357">
+    <note priority="veryhigh" time="1245964357" done="1246015645">
         use the eth0.data and lo.data to test thing without even requiring root
-        <note priority="veryhigh" time="1245980471">
+        <note priority="veryhigh" time="1245980471" done="0">
             I got lo.data, but I still have to test eth0.data and ....
         </note>
-        <note priority="veryhigh" time="1245980497">
+        <note priority="veryhigh" time="1245980497" done="0">
             ... I should probably test a lot of the shit from the &lt; t/31 tests that needs root
         </note>
     </note>
