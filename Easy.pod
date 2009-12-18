@@ -395,6 +395,30 @@ Example:
 
 =back
 
+=head1 FAST_CALLBACK
+
+The L<NetPacket> stuff is a little slow because it's object oriented and
+therefore involves many function calls.  If you have a need for something really
+fast, you can supply something to the C<loop()> function.  This will avoid all
+internal processing of the packet and you will be completely on your own
+regarding the packet processing.  Also, the C<loop()> will fail to return the
+number of processed packets since it didn't process any.
+
+    1 while defined
+    # NOTE: defined, since loop returns 0 and undef on error
+    
+    $npe->loop( sub {
+        my ($user_data, $header, $raw_bytes) = @_;
+
+        # $user_data is literally "user data"
+
+        # $header is like this:
+        # { caplen => 96, len => 98, tv_sec => 1245963414, tv_usec => 508250 },
+
+        print unpack("H*", $raw_bytes), "\n";
+    });
+
+
 =head1 AUTHOR
 
 Paul Miller C<< <jettero@cpan.org> >>

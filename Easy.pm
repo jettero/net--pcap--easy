@@ -16,7 +16,7 @@ use NetPacket::UDP;
 use NetPacket::IGMP;
 use NetPacket::ICMP qw(:types);
 
-our $VERSION     = "1.4000";
+our $VERSION     = "1.4100";
 our $MIN_SNAPLEN = 256;
 our $DEFAULT_PPL = 32;
 
@@ -198,8 +198,9 @@ sub _arp {
 
 sub loop {
     my $this = shift;
+    my $cb   = shift || $this->{_mcb};
 
-    my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $this->{_mcb}, "user data");
+    my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $cb, "user data");
 
     return unless $ret == 0;
     return (delete $this->{_pp}) || 0; # return the number of processed packets.

@@ -1,3 +1,8 @@
+1.4000: Fri Dec 18 2009
+   - support for fast callbacks, NetPacket::decode() is kinda
+     slow since it involves a few function calls.  Per packet,
+     this adds up in a hurry.
+
 1.4000: Thu Jun 25 16:00:00 EDT 2009
    - made {pcap} and {netmask} into accessor functions (get_pcap,
      etc) and altered pods
