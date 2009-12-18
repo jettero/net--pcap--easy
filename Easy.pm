@@ -2,7 +2,7 @@
 package Net::Pcap::Easy;
 
 use strict;
-use warnings;
+#use warnings;
 
 use Carp;
 use Socket;
