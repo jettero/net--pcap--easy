@@ -11,7 +11,7 @@ my $lbytes = "\xc0\xa8";
 my $upload = 0; # true or false
 
 my $npe = Net::Pcap::Easy->new(
-   dev              => $ARGV[0],
+   dev              => ($ARGV[0] || "eth0"),
    filter           => join(" or ", ($upload ? ("(src net $local and not dst net $local)") : ()),
                                                 "(dst net $local and not src net $local)" ),
    packets_per_loop => $ppl,
@@ -21,6 +21,12 @@ my $npe = Net::Pcap::Easy->new(
    promiscuous      => 0, # true or false
 );
 
+sub _do_things {
+    my ($cust, $dir, $prot, $port);
+
+    local $" = ", ";
+    print "_do_things(@_)\n";
+}
 
 1 while defined
 # NOTE: defined, since loop returns 0 and undef on error
@@ -33,7 +39,7 @@ $npe->loop( sub {
     # $header is like this:
     # { caplen => 96, len => 98, tv_sec => 1245963414, tv_usec => 508250 },
 
-    print unpack("H*", $raw_bytes), "\n";
+    # print unpack("H*", $raw_bytes), "\n";
 
     my $packet = $_[-1]; # this is the same as $raw_bytes, but I prefer
                          # the word packet and rarely examin the other
@@ -66,8 +72,6 @@ $npe->loop( sub {
 
     # Here, I'm only interestd in local network downloads
 
-    my $upload = 0;
-
     if( substr($packet, 30, 2) eq $lbytes ) { # 192.168.0.0/16x.x
         # download direction
 
@@ -79,7 +83,7 @@ $npe->loop( sub {
         # 80 for http, 110 for pop3, etc.  Unpack('n', blarg) gives the
         # network order 2-byte port number as a Perl number.
 
-        _do_things($cust, $port);
+        _do_things($cust, dn => $l4prot == 6 ? "tcp" : "udp", $port);
 
     } elsif( $upload ) {
         # upload direction
@@ -89,7 +93,7 @@ $npe->loop( sub {
 
         # In the upload direction, the protocol port is the dst port.
 
-        _do_things($cust, $port);
+        _do_things($cust, up => $l4prot == 6 ? "tcp" : "udp", $port);
     }
 
 });
