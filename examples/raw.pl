@@ -57,7 +57,7 @@ $npe->loop( sub {
 
     my $l4prot = ord substr $packet, 23, 1; # the L4protocol
 
-    # return unless it's udp or tcp
+    # return unless it's udp(17) or tcp(6)
     return unless $l4prot == 6 or $l4prot == 17;
 
     my $l3hlen= ($l3protlen & 0x0f) * 4; # number of 32bit words
