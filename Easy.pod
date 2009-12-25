@@ -147,7 +147,7 @@ L</network>, L</netmask> and the raw versions -- their results are undefined.
     1 while $npe->loop; # loop() returns 3 twice, then a 0
     exit 0;
 
-=item C<packets_per_loop> 
+=item C<packets_per_loop>
 
 The number of packets to capture on each loop.  Most likely, it's more efficient
 to capture more than one packet per loop.  But if you capture too many your
@@ -157,7 +157,7 @@ L<Net::Pcap::Easy> defaults to a value of C<32> packets per loop.  The minimum
 is C<1> and L<Net::Pcap::Easy> will silently discard values lower than C<1>,
 using the default PPL instead.
 
-=item C<bytes_to_capture> 
+=item C<bytes_to_capture>
 
 The number of bytes to capture from each packet.  Defaults to C<1024>.  The
 minimum is C<256> and L<Net::Pcap::Easy> will silently discard values lower than
@@ -165,14 +165,14 @@ this, simply using the minimum instead.  If you really really want to capture
 less, you can change the minimum by setting C<$Net::Pcap::Easy::MIN_SNAPLEN> to
 whatever value you like.
 
-=item C<timeout_in_ms> 
+=item C<timeout_in_ms>
 
 Use this to set a timeout for the C<loop()> method (see below).  The default is
 C<0>, meaning: wait until I get my packets.  If you set this to some number
 greater than C<0>, the C<loop()> function may return before capturing the
 requested PPL.
 
-=item C<promiscuous> 
+=item C<promiscuous>
 
 This is a boolean value (in the perl sense) indicating whether you wish to
 capture packets not intended for the listening interface.  The default is false.
@@ -310,7 +310,7 @@ The callback will receive as arguments:
     my ($npe, $ether) = @_;
 
 There doesn't seem to be a C<NetPacket> decoder for this type of packet, so,
-this callback gets only the C<NetPacket::Ethernet> object. 
+this callback gets only the C<NetPacket::Ethernet> object.
 
 =item C<snmp_callback>
 
@@ -319,7 +319,7 @@ The callback will receive as arguments:
     my ($npe, $ether) = @_;
 
 There doesn't seem to be a C<NetPacket> decoder for this type of packet, so,
-this callback gets only the C<NetPacket::Ethernet> object. 
+this callback gets only the C<NetPacket::Ethernet> object.
 
 =item C<ppp_callback>
 
@@ -328,7 +328,7 @@ The callback will receive as arguments:
     my ($npe, $ether) = @_;
 
 There doesn't seem to be a C<NetPacket> decoder for this type of packet, so,
-this callback gets only the C<NetPacket::Ethernet> object. 
+this callback gets only the C<NetPacket::Ethernet> object.
 
 =item C<appletalk_callback>
 
@@ -337,7 +337,7 @@ The callback will receive as arguments:
     my ($npe, $ether) = @_;
 
 There doesn't seem to be a C<NetPacket> decoder for this type of packet, so,
-this callback gets only the C<NetPacket::Ethernet> object. 
+this callback gets only the C<NetPacket::Ethernet> object.
 
 =back
 
@@ -404,9 +404,12 @@ internal processing of the packet and you will be completely on your own
 regarding the packet processing.  Also, the C<loop()> will fail to return the
 number of processed packets since it didn't process any.
 
+Warning: The following is not "Easy" like the rest of this package and assumes
+knowledge of the network layers (2-Ethernet, 3-IPv4, 4-TCP/UDP)
+
     1 while defined
     # NOTE: defined, since loop returns 0 and undef on error
-    
+
     $npe->loop( sub {
         my ($user_data, $header, $raw_bytes) = @_;
 
@@ -416,6 +419,64 @@ number of processed packets since it didn't process any.
         # { caplen => 96, len => 98, tv_sec => 1245963414, tv_usec => 508250 },
 
         print unpack("H*", $raw_bytes), "\n";
+
+        my $packet = $_[-1]; # this is the same as $raw_bytes, but I prefer
+                             # the word packet and rarely examin the other
+                             # elements of @_
+
+        # Calculating precisely what you need is quite a bit faster than
+        # decoding the whole packet -- although it's not exactly "Easy."  Say
+        # we're interested in IPv4 TCP and UDP packets only... The following
+        # assumes *Ethernet* and we don't check it!
+
+        my $l3protlen = ord substr $packet, 14, 1; # the protocol and length
+        my $l3prot    = $l3protlen & 0xf0 >> 2; # the protocol part
+
+        return unless $l3prot == 4; # return unless IPv4
+
+        my $l4prot = ord substr $packet, 23, 1; # the L4protocol
+
+        # return unless it's udp or tcp
+        return unless $l4prot == 6 or $l4prot == 17;
+
+        my $l3hlen= ($l3protlen & 0x0f) * 4; # number of 32bit words
+        my $l4 = 14 + $l3hlen; # the layer 4 data starts here
+
+        # my $src_ip = substr $packet, 26, 4; # these are netowrk order packed
+        # my $dst_ip = substr $packet, 30, 4; # but they're pretty easy to convert
+
+        # The ord of the individual bytes of an IP are what we usually
+        # see... join(".", map { ord $_} split "", "\xc0\xa8\x01\x01")
+        # gives 192.168.1.1
+
+        # Here, I'm only interestd in local network downloads
+
+        my $upload = 0;
+
+        if( substr($packet, 30, 2) eq "\xc0\xa8" ) { # 192.168.0.0/16x.x
+            # download direction
+
+            my $cust = ord(substr($packet, 32,1)) .'.'. ord(substr($packet, 33,1));
+            my $port = unpack 'n', substr $packet, $l4+0, 2; # src port
+
+            # On my network, in this sense, the last two bytes idenfity a "customer"
+            # the source port (on a download) is the port the protocol operates on.
+            # 80 for http, 110 for pop3, etc.  Unpack('n', blarg) gives the
+            # network order 2-byte port number as a Perl number.
+
+            _do_things($cust, $port);
+
+        } elsif( $upload ) {
+            # upload direction
+
+            my $cust = ord(substr($packet, 28,1)) .'.'. ord(substr($packet, 29,1));
+            my $port = unpack 'n', substr $packet, $l4+2, 2; # dst port
+
+            # In the upload direction, the protocol port is the dst port.
+
+            _do_things($cust, $port);
+        }
+
     });
 
 
