@@ -7,6 +7,10 @@ MANIFEST
 Makefile.PL
 README
 eth0.data
+examples/defcallback.pl
+examples/dev-example.pl
+examples/raw.pl
+examples/synopsis.pl
 lo.data
 t/01_load.t
 t/05_tcp_tests.t

@@ -1,4 +1,8 @@
-1.4000: Fri Dec 18 2009
+1.4105: Fri Dec 25 2009
+   - added docs regarding the raw collector
+   - added the examples from the pod to an examples dir
+
+1.4100: Fri Dec 18 2009
    - support for fast callbacks, NetPacket::decode() is kinda
      slow since it involves a few function calls.  Per packet,
      this adds up in a hurry.
