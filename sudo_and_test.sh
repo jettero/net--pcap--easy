@@ -9,7 +9,7 @@ perl Makefile.PL
 make
 
 # I use pub, ymmv, this is for my testing purposes
-echo $ENV{DEV:-pub} > device
+echo ${DEV:-pub} > device
 sudo make test
 echo skip > device
 
