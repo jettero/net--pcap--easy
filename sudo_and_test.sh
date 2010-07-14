@@ -11,5 +11,5 @@ make
 # I use pub, ymmv, this is for my testing purposes
 echo ${DEV:-pub} > device
 sudo make test
-echo skip > device
+echo -n > device
 
