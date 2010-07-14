@@ -490,9 +490,23 @@ all.  Half the fun of releasing this stuff is knowing that people use it.
 If you see anything wrong with the callbacks, the docs, or anything:  Definitely
 let me know!  rt.cpan, irc, email, whatever.  Just let me know.
 
+=head2 Patches welcome!
+
+=over
+
+=item ANDK
+
+Fixed various things in the init functions.  See RT #47324.
+
+=item Daniel Roethlisberger
+
+Helped L<Net::Pcap::Easy> load non Ethernet frames.
+
+=back
+
 =head1 COPYRIGHT
 
-Copyright (c) 2009 Paul Miller
+Copyright (c) 2009-2010 Paul Miller
 
 =head1 SEE ALSO
 
