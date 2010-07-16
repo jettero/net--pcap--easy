@@ -1,6 +1,8 @@
 1.4200: Wed Jul 14 2010
    - got a patch from Daniel Roethlisberger regarding packets
      without Ethernet encapsulation
+   - wrote some tests for it
+   - noted that we insert this fake encapsulation.
 
 1.4105: Fri Dec 25 2009
    - added docs regarding the raw collector
