@@ -16,7 +16,7 @@ use NetPacket::UDP;
 use NetPacket::IGMP;
 use NetPacket::ICMP qw(:types);
 
-our $VERSION     = "1.4105";
+our $VERSION     = "1.4200";
 our $MIN_SNAPLEN = 256;
 our $DEFAULT_PPL = 32;
 
@@ -102,12 +102,26 @@ sub new {
     }
 
     $this->{_mcb} = sub {
-        my ($user_data, $header, $packet) = @_;
-        my $ether = NetPacket::Ethernet->decode($packet);
+        my ($linktype, $header, $packet) = @_;
 
+        # For non-ethernet data link types, construct a
+        # fake ethernet header from the data available.
+        my ($ether, $type);
+        if ($linktype == Net::Pcap::DLT_EN10MB) {
+            $ether = NetPacket::Ethernet->decode($packet);
+            $type = $ether->{type};
+        } elsif ($linktype == Net::Pcap::DLT_LINUX_SLL) {
+            use bytes;
+            $type = unpack("n", substr($packet, 2+2+2+8, 2));
+            $ether = NetPacket::Ethernet->decode(
+                    pack("h24 n", "0" x 24, $type) . substr($packet, 16));
+            no bytes;
+        } else {
+            die "ERROR Unhandled data link type: " .
+                Net::Pcap::datalink_val_to_name($linktype);
+        }
         $this->{_pp} ++;
 
-        my $type = $ether->{type};
         my $cb;
 
         return $this->_ipv4( $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
@@ -200,7 +214,7 @@ sub loop {
     my $this = shift;
     my $cb   = shift || $this->{_mcb};
 
-    my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $cb, "user data");
+    my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $cb, Net::Pcap::datalink($this->{pcap}));
 
     return unless $ret == 0;
     return (delete $this->{_pp}) || 0; # return the number of processed packets.
