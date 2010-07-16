@@ -9,7 +9,7 @@ use Test;
 plan tests => 6;
 
 my $npe = Net::Pcap::Easy->new(
-    dev              => "file:lo.data",
+    dev              => "file:dat/lo.data",
     packets_per_loop => 1,
 );
 

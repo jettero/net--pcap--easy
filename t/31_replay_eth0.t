@@ -11,7 +11,7 @@ plan tests => 5 + 5;
 my ($udp, $icmp, $arp, $nss2_sooon, $sooon_nss2);
 
 my $npe = Net::Pcap::Easy->new(
-    dev              => "file:eth0.data",
+    dev              => "file:dat/eth0.data",
     promiscuous      => 0,
     packets_per_loop => 32,
 
