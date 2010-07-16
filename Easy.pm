@@ -110,12 +110,14 @@ sub new {
         if ($linktype == Net::Pcap::DLT_EN10MB) {
             $ether = NetPacket::Ethernet->decode($packet);
             $type = $ether->{type};
+
         } elsif ($linktype == Net::Pcap::DLT_LINUX_SLL) {
             use bytes;
             $type = unpack("n", substr($packet, 2+2+2+8, 2));
             $ether = NetPacket::Ethernet->decode(
                     pack("h24 n", "0" x 24, $type) . substr($packet, 16));
             no bytes;
+
         } else {
             die "ERROR Unhandled data link type: " .
                 Net::Pcap::datalink_val_to_name($linktype);

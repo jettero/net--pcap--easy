@@ -478,6 +478,12 @@ knowledge of the network layers (2-Ethernet, 3-IPv4, 4-TCP/UDP)
 
     });
 
+=head1 CAVEAT
+
+Note, silly though this may seem, if the packets are received by a non-Ethernet
+device, they will be encapsulated in a fake Ethernet frame before being passed
+to the callbacks.  This design decision (or kludge) was chosen to help keep the
+module simple.
 
 =head1 AUTHOR
 
