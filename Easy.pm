@@ -126,88 +126,88 @@ sub new {
 
         my $cb;
 
-        return $this->_ipv4( $ether, NetPacket::IP  -> decode($ether->{data})) if $type == ETH_TYPE_IP;
-        return $this->_arp(  $ether, NetPacket::ARP -> decode($ether->{data})) if $type == ETH_TYPE_ARP;
+        return $this->_ipv4( $ether, NetPacket::IP  -> decode($ether->{data}),  $header) if $type == ETH_TYPE_IP;
+        return $this->_arp(  $ether, NetPacket::ARP -> decode($ether->{data}),  $header) if $type == ETH_TYPE_ARP;
         
-        return $cb->($this, $ether) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
-        return $cb->($this, $ether) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
-        return $cb->($this, $ether) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
-        return $cb->($this, $ether) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
+        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
+        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
+        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
+        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
 
-        return $cb->($this, $ether) if $cb = $this->{default_callback};
+        return $cb->($this, $ether,  $header) if $cb = $this->{default_callback};
     };
 
     return $this;
 }
 
 sub _icmp {
-    my ($this, $ether, $ip, $icmp) = @_;
+    my ($this, $ether, $ip, $icmp, $header) = @_;
 
     my $cb;
     my $type = $icmp->{type};
 
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ECHOREPLY     and $cb = $this->{icmpechoreply_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_UNREACH       and $cb = $this->{icmpunreach_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_SOURCEQUENCH  and $cb = $this->{icmpsourcequench_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_REDIRECT      and $cb = $this->{icmpredirect_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ECHO          and $cb = $this->{icmpecho_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ROUTERADVERT  and $cb = $this->{icmprouteradvert_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_ROUTERSOLICIT and $cb = $this->{icmproutersolicit_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_TIMXCEED      and $cb = $this->{icmptimxceed_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_PARAMPROB     and $cb = $this->{icmpparamprob_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_TSTAMP        and $cb = $this->{icmptstamp_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_TSTAMPREPLY   and $cb = $this->{icmptstampreply_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_IREQ          and $cb = $this->{icmpireq_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_IREQREPLY     and $cb = $this->{icmpireqreply_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_ECHOREPLY     and $cb = $this->{icmpechoreply_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_UNREACH       and $cb = $this->{icmpunreach_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_SOURCEQUENCH  and $cb = $this->{icmpsourcequench_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_REDIRECT      and $cb = $this->{icmpredirect_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_ECHO          and $cb = $this->{icmpecho_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_ROUTERADVERT  and $cb = $this->{icmprouteradvert_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_ROUTERSOLICIT and $cb = $this->{icmproutersolicit_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_TIMXCEED      and $cb = $this->{icmptimxceed_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_PARAMPROB     and $cb = $this->{icmpparamprob_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_TSTAMP        and $cb = $this->{icmptstamp_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_TSTAMPREPLY   and $cb = $this->{icmptstampreply_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_IREQ          and $cb = $this->{icmpireq_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_IREQREPLY     and $cb = $this->{icmpireqreply_callback};
 
     # NOTE: MASKREQ is exported as MASREQ ... grrz: http://rt.cpan.org/Ticket/Display.html?id=37931
-    return $cb->($this, $ether, $ip, $icmp) if $type == NetPacket::ICMP::ICMP_MASKREQ() and $cb = $this->{icmpmaskreq_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $type == ICMP_MASKREPLY     and $cb = $this->{icmpmaskreply_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == NetPacket::ICMP::ICMP_MASKREQ() and $cb = $this->{icmpmaskreq_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $type == ICMP_MASKREPLY     and $cb = $this->{icmpmaskreply_callback};
 
-    return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{icmp_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{ipv4_callback};
-    return $cb->($this, $ether, $ip, $icmp) if $cb = $this->{default_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $cb = $this->{icmp_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $cb = $this->{ipv4_callback};
+    return $cb->($this, $ether, $ip, $icmp, $header ) if $cb = $this->{default_callback};
 
     return;
 }
 
 sub _ipv4 {
-    my ($this, $ether, $ip) = @_;
+    my ($this, $ether, $ip, $header) = @_;
 
     my $cb;
     my $proto = $ip->{proto};
 
     # NOTE: this could probably be made slightly more efficient and less repeatative.
 
-    return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data})) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
-    return $cb->($this, $ether, $ip, NetPacket::UDP  -> decode($ip->{data})) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
-    return $this->_icmp($ether,$ip,  NetPacket::ICMP -> decode($ip->{data})) if $proto == IP_PROTO_ICMP;
-    return $cb->($this, $ether, $ip, NetPacket::IGMP -> decode($ip->{data})) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
+    return $cb->($this, $ether, $ip, NetPacket::TCP  -> decode($ip->{data}), $header) if $proto == IP_PROTO_TCP  and $cb = $this->{tcp_callback};
+    return $cb->($this, $ether, $ip, NetPacket::UDP  -> decode($ip->{data}), $header) if $proto == IP_PROTO_UDP  and $cb = $this->{udp_callback};
+    return $this->_icmp($ether,$ip,  NetPacket::ICMP -> decode($ip->{data}), $header) if $proto == IP_PROTO_ICMP;
+    return $cb->($this, $ether, $ip, NetPacket::IGMP -> decode($ip->{data}), $header) if $proto == IP_PROTO_IGMP and $cb = $this->{igmp_callback};
 
     my $spo;
        $spo = NetPacket::TCP  -> decode($ip->{data}) if $proto == IP_PROTO_TCP;
        $spo = NetPacket::UDP  -> decode($ip->{data}) if $proto == IP_PROTO_UDP;
        $spo = NetPacket::IGMP -> decode($ip->{data}) if $proto == IP_PROTO_IGMP;
 
-    return $cb->($this, $ether, $ip, $spo) if $cb = $this->{ipv4_callback};
-    return $cb->($this, $ether, $ip, $spo) if $cb = $this->{default_callback};
+    return $cb->($this, $ether, $ip, $spo, $header) if $cb = $this->{ipv4_callback};
+    return $cb->($this, $ether, $ip, $spo, $header) if $cb = $this->{default_callback};
 
     return;
 }
 
 sub _arp {
-    my ($this, $ether, $arp) = @_;
+    my ($this, $ether, $arp, $header) = @_;
 
     my $cb;
     my $op = $arp->{opcode};
 
-    return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REQUEST and $cb = $this->{arpreq_callback};
-    return $cb->($this, $ether, $arp) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
-    return $cb->($this, $ether, $arp) if $op == RARP_OPCODE_REQUEST and $cb = $this->{rarpreq_callback};
-    return $cb->($this, $ether, $arp) if $op == RARP_OPCODE_REPLY   and $cb = $this->{rarpreply_callback};
+    return $cb->($this, $ether, $arp, $header) if $op ==  ARP_OPCODE_REQUEST and $cb = $this->{arpreq_callback};
+    return $cb->($this, $ether, $arp, $header) if $op ==  ARP_OPCODE_REPLY   and $cb = $this->{arpreply_callback};
+    return $cb->($this, $ether, $arp, $header) if $op == RARP_OPCODE_REQUEST and $cb = $this->{rarpreq_callback};
+    return $cb->($this, $ether, $arp, $header) if $op == RARP_OPCODE_REPLY   and $cb = $this->{rarpreply_callback};
 
-    return $cb->($this, $ether, $arp) if $cb = $this->{arp_callback};
-    return $cb->($this, $ether, $arp) if $cb = $this->{default_callback};
+    return $cb->($this, $ether, $arp, $header) if $cb = $this->{arp_callback};
+    return $cb->($this, $ether, $arp, $header) if $cb = $this->{default_callback};
 
     return;
 }

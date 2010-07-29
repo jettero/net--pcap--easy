@@ -11,11 +11,12 @@ my $npe = Net::Pcap::Easy->new(
     packets_per_loop => 10,
     bytes_to_capture => 1024,
     timeout_in_ms    => 0, # 0ms means forever
-    promiscuous      => 0, # true or false
+    promiscuous      => 1, # true or false
 
     icmp_callback => sub {
+#        my ($npe, $ether, $ip, $icmp, $header) = @_;
+#        print "ICMP: $ether->{src_mac}:$ip->{src_ip} -> $ether->{dest_mac}:$ip->{dest_ip} Len: $header->{len} Snaplen: $header->{caplen}\n";
         my ($npe, $ether, $ip, $icmp) = @_;
-
         print "ICMP: $ether->{src_mac}:$ip->{src_ip} -> $ether->{dest_mac}:$ip->{dest_ip}\n";
     },
 );
