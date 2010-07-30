@@ -516,6 +516,10 @@ let me know!  rt.cpan, irc, email, whatever.  Just let me know.
 
 =head2 Patches welcome!
 
+Please note that your patches should avoid changing the API for downstream
+users.  Sometimes this means making bad design decisions (e.g., sticking fake
+Ethernet headers on non-Ethernet frames).
+
 =over
 
 =item ANDK
