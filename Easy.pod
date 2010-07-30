@@ -238,7 +238,7 @@ object.
 
 Example:
 
-    tcp_callback = sub {
+    tcp_callback => sub {
         my ($npe, $ether, $ip, $tcp, $header ) = @_;
 
         print "TCP: $ip->{src_ip}:$tcp->{src_port} -> $ip->{dest_ip}:$tcp->{dest_port}\n";
@@ -379,7 +379,7 @@ types of calls it might receive:
 
 Example:
 
-    default_callback = sub {
+    default_callback => sub {
         my ($npe, $ether, $po, $spo, $header ) = @_;
 
         if( $po ) {
