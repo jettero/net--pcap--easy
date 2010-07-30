@@ -530,6 +530,10 @@ Fixed various things in the init functions.  See RT #47324.
 
 Helped L<Net::Pcap::Easy> load non Ethernet frames.
 
+=item Jerry Litteer
+
+Needed Ethernet C<$header> information for his project, so he sent patches.
+
 =back
 
 =head1 COPYRIGHT
