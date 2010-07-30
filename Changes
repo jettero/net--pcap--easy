@@ -1,3 +1,7 @@
+1.4205: Fri Jul 30 2010
+   - accepted a patch from Jerry Litteer
+   - added tcp to the synopsis and examples/synopsis.pl
+
 1.4200: Wed Jul 14 2010
    - got a patch from Daniel Roethlisberger regarding packets
      without Ethernet encapsulation
