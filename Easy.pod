@@ -222,20 +222,19 @@ The callback will receive as arguments:
 
 C<$npe> is the L<Net::Pcap::Easy> object, C<$ether> is a L<NetPacket::Ethernet>
 object, C<$ip> is a L<NetPacket::IP> object, C<$tcp> is a L<NetPacket::TCP>
-object and C<$header> is a L<Net::Pcap> header object.  Note that older versions
-of C<Net::Pcap::Easy> do not support this additional argument.
+object and C<$header> is a L<Net::Pcap> header object.
+
+Each C<Net::Pcap> object contains the length of the entire packet C<{len}>, the
+length captured by the libpcap C<{caplen}>, and the timestamp from the packet header
+C<{tv_sec}>/C<{tv_usec}> — C<{tv_sec}> is seconds since the epoch (see:
+L<perlfunc/localtime>) and C<{tv_usec}> is microseconds since that second [I
+think].
 
 Each C<NetPacket> object contains a C<{data}> field that holds the data
 below the packet headers.  Unsurprisingly, the C<{dest_mac}> and C<{src_mac}>
 are available in the C<$ether> object, the C<{src_ip}> and C<{dest_ip}> are in
 the C<$ip> object and the C<{dest_port}> and C<{src_port}> are in the C<$tcp>
 object.
-
-Each C<Net::Pcap> object contains:
-    C<{len}>     - Packet length,
-    C<{tv_usec}> - Micro-seconds,
-    C<{tv_sec}>  - Unix time (Seconds since 00:00:00 Jan 01, 1970),
-    C<{caplen}>  - Capture length (Snaplength).
 
 Example:
 
