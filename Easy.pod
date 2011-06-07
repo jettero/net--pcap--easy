@@ -110,6 +110,16 @@ end of a packet file.
 
 It returns the empty list or the undef value in the case of an error.
 
+=item C<stats()>
+
+Returns a hash (or hashref) containing collection statistics.
+
+    {
+        drop   => 0, # packets missed by libpcap
+        ifdrop => 0, # packets missed by interface
+        recv   => 1, # packets captured
+    }
+
 =item C<new()>
 
 The details are in the L<OPTIONS|/OPTIONS> section below.
