@@ -15,16 +15,30 @@ if( -s "device" ) {
 
 unless( $dev ) {
     warn "   [skipping tests: no device given]\n";
+    UGH_DIE:
     skip(1, 0,0) for 1 .. $max;
     exit 0;
 }
 
-my $npe = Net::Pcap::Easy->new(
+my $npe;
+unless(
+eval {
+$npe = Net::Pcap::Easy->new(
     dev              => $dev,
     promiscuous      => 1,
     packets_per_loop => 1,
     default_callback => sub {},
 );
+}) {
+        if( $@ =~ m/(?:permission|permitted)/i ) {
+            warn "   [skipping tests: permission denied, try running as root]\n";
+
+        } else {
+            warn "couldn't open $dev: $@";
+        }
+
+        goto UGH_DIE;
+    }
 
 $npe->loop;
 
