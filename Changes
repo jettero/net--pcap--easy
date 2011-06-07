@@ -1,3 +1,6 @@
+1.4207: Tue Jun 07 2011
+   - added ->stats()
+
 1.4205: Fri Jul 30 2010
    - accepted a patch from Jerry Litteer
    - added tcp to the synopsis and examples/synopsis.pl

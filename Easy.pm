@@ -16,7 +16,7 @@ use NetPacket::UDP;
 use NetPacket::IGMP;
 use NetPacket::ICMP qw(:types);
 
-our $VERSION     = "1.4205";
+our $VERSION     = "1.4207";
 our $MIN_SNAPLEN = 256;
 our $DEFAULT_PPL = 32;
 
@@ -247,5 +247,14 @@ sub cidr {
     return $nm;
 }
 
+sub stats {
+    my $this = shift;
+
+    my %stats;
+    Net::Pcap::pcap_stats($this->{pcap}, \%stats);
+    $stats{ substr $_, 3 } = delete $stats{$_} for keys %stats;
+
+    return wantarray ? %stats : \%stats;
+}
 
 1;
