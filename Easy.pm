@@ -78,8 +78,8 @@ sub new {
             my $ppl = $this->{packets_per_loop};
                $ppl = $this->{packets_per_loop} = $DEFAULT_PPL unless defined $ppl and $ppl > 0;
 
-            my $ttl = $this->{timeout_in_ms} || 0;
-               $ttl = 0 if $ttl < 0;
+            my $ttl = $this->{timeout_in_ms} || 250;
+               $ttl = 250 if $ttl < 0;
 
             my $snaplen = $this->{bytes_to_capture} || 1024;
                $snaplen = $MIN_SNAPLEN unless $snaplen >= 256;
