@@ -1,3 +1,7 @@
+1.4209: Mon Nov 17 2014
+   - timeouts will rarely (if ever) work — or do anything like what the user
+     expects to happen.  Changed docs and added forks.pm example
+
 1.4207: Tue Jun 07 2011
    - added ->stats()
 

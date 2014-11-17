@@ -1,4 +1,3 @@
-.perlcriticrc
 .todo
 Changes
 contrib/ppp-over-ssh.sh
@@ -9,6 +8,7 @@ Easy.pm
 Easy.pod
 examples/defcallback.pl
 examples/dev-example.pl
+examples/forks.pl
 examples/raw.pl
 examples/synopsis.pl
 Makefile.PL
@@ -27,6 +27,5 @@ t/31_replay_eth0.t
 t/31_replay_lo.t
 t/40_replay_ppp-datalink.t
 t/50_memory_leaks.t
-t/critic.t
 t/pod.t
 t/pod_coverage.t

@@ -1,3 +1,4 @@
+=encoding utf-8
 =head1 NAME
 
 Net::Pcap::Easy - Net::Pcap is awesome, but it's difficult to bootstrap
@@ -14,7 +15,6 @@ Net::Pcap::Easy - Net::Pcap is awesome, but it's difficult to bootstrap
         filter           => "host 127.0.0.1 and (tcp or icmp)",
         packets_per_loop => 10,
         bytes_to_capture => 1024,
-        timeout_in_ms    => 0, # 0ms means forever
         promiscuous      => 0, # true or false
 
         tcp_callback => sub {
@@ -193,6 +193,16 @@ Use this to set a timeout for the C<loop()> method (see below).  The default is
 C<0>, meaning: wait until I get my packets.  If you set this to some number
 greater than C<0>, the C<loop()> function may return before capturing the
 requested PPL.
+
+Note that this probably doesn't ever do anything useful.  The libpcap timeout
+doesn't have any useful relationship to actually timing out on most platforms.
+
+L<https://github.com/the-tcpdump-group/libpcap/issues/86> (et al).
+
+The simplest solution for this is to use L<forks>.  There is an example of this
+included in the distribution.
+
+L<https://github.com/jettero/net--pcap--easy/blob/master/examples/forks.pl>
 
 =item C<promiscuous>
 
