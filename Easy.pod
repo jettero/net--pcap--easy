@@ -14,7 +14,6 @@ Net::Pcap::Easy - Net::Pcap is awesome, but it's difficult to bootstrap
         filter           => "host 127.0.0.1 and (tcp or icmp)",
         packets_per_loop => 10,
         bytes_to_capture => 1024,
-        timeout_in_ms    => 0, # 0ms means forever
         promiscuous      => 0, # true or false
 
         tcp_callback => sub {
@@ -186,13 +185,6 @@ minimum is C<256> and L<Net::Pcap::Easy> will silently discard values lower than
 this, simply using the minimum instead.  If you really really want to capture
 less, you can change the minimum by setting C<$Net::Pcap::Easy::MIN_SNAPLEN> to
 whatever value you like.
-
-=item C<timeout_in_ms>
-
-Use this to set a timeout for the C<loop()> method (see below).  The default is
-C<0>, meaning: wait until I get my packets.  If you set this to some number
-greater than C<0>, the C<loop()> function may return before capturing the
-requested PPL.
 
 =item C<promiscuous>
 
