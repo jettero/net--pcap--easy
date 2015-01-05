@@ -124,6 +124,15 @@ Returns a hash (or hashref) containing collection statistics.
 
 The details are in the L<OPTIONS|/OPTIONS> section below.
 
+=item C<close()>
+
+Close the pcap.  Intended to be useful from SIG/while loops like this.
+
+    $SIG{INT} = sub { $npe->close };
+    while( $npe->loop ) {
+        # ... blah
+    }
+
 =back
 
 =head1 OPTIONS

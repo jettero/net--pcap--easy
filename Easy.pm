@@ -16,7 +16,7 @@ use NetPacket::UDP;
 use NetPacket::IGMP;
 use NetPacket::ICMP qw(:types);
 
-our $VERSION     = "1.4209";
+our $VERSION     = "1.4210";
 our $MIN_SNAPLEN = 256;
 our $DEFAULT_PPL = 32;
 
@@ -30,6 +30,11 @@ my %KNOWN_CALLBACKS = (map {($_=>1)} qw(
 ));
 
 sub DESTROY {
+    my $this = shift;
+    return $this->close;
+}
+
+sub close {
     my $this = shift;
 
     my $p = delete $this->{pcap};
@@ -216,6 +221,8 @@ sub loop {
     my $this = shift;
     my $cb   = shift || $this->{_mcb};
 
+    return unless exists $this->{pcap}; # in case we close early
+
     my $ret = Net::Pcap::loop($this->{pcap}, $this->{packets_per_loop}, $cb, Net::Pcap::datalink($this->{pcap}));
 
     return unless $ret == 0;
@@ -249,6 +256,8 @@ sub cidr {
 
 sub stats {
     my $this = shift;
+
+    return unless exists $this->{pcap}; # in case we close early
 
     my %stats;
     Net::Pcap::pcap_stats($this->{pcap}, \%stats);

@@ -1,3 +1,6 @@
+1.4210: Mon Jan 05 2015
+   - add a close() method and support early shutdown (useful in SIG{BLAH} = sub { $npe->close }
+
 1.4209: Mon Nov 17 2014
    - timeouts will rarely (if ever) work — or do anything like what the user
      expects to happen.  Changed docs and added forks.pm example

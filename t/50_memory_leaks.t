@@ -4,7 +4,7 @@ use Test;
 use Net::Pcap::Easy;
 use File::Slurp qw(slurp);
 
-plan tests => my $max = 1;
+plan tests => my $max = 50;
 
 my $dev;
 if( -s "device" ) {
@@ -19,20 +19,18 @@ unless( $dev ) {
 }
 
 if( eval q{ use Unix::Process; 1; } ) {
-    my $first = Unix::Process->vsz($$);
-    for(1 .. 100) {
+
+    for(1 .. 50) {
         my $npe = Net::Pcap::Easy->new( bytes_to_capture => 4096, dev=>$dev, ipv4_callback=>sub{} );
     }
-    my $last = Unix::Process->vsz($$);
 
-    # we should not grow significantly between runs but if we do... then we
-    # should admit to being a total failure
-    if( $last <= $first*1.5 ) {
-        ok(1);
+    my $first = Unix::Process->vsz($$);
+    for(1 .. 50) {
+        my $npe = Net::Pcap::Easy->new( bytes_to_capture => 4096, dev=>$dev, ipv4_callback=>sub{} );
+        my $last = Unix::Process->vsz($$);
 
-    } else {
-        warn " ugh, before run vsz=$first; after is vsz=$last.  This is not acceptable.\n";
-        ok(0);
+        ok( $last, $first );
+        $first = $last;
     }
 
 } else {
