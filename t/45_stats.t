@@ -44,6 +44,6 @@ $npe->loop;
 
 my $stats = $npe->stats;
 
-ok( $stats->{recv}, 1 );
+ok( $stats->{recv} >0 );
 ok( defined($stats->{drop})   and $stats->{drop}   >= 0 );
 ok( defined($stats->{ifdrop}) and $stats->{ifdrop} >= 0 );
