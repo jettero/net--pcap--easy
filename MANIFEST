@@ -25,7 +25,10 @@ t/16_two_filters_two_pcaps_interleaved.t
 t/16_two_filters_two_pcaps_serialized.t
 t/31_replay_eth0.t
 t/31_replay_lo.t
+t/32_fast_callback.t
 t/40_replay_ppp-datalink.t
+t/45_stats.t
 t/50_memory_leaks.t
+t/51_upstream_memory_leaks.t
 t/pod.t
 t/pod_coverage.t
