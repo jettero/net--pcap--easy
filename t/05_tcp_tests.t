@@ -56,7 +56,7 @@ my $npe = eval { Net::Pcap::Easy->new(
 
         ok( $ip->{src_ip},  qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );
         ok( $ip->{dest_ip}, qr(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) );
-        ok( $npe->is_local( $ip->{src_ip} ) or $npe->is_local( $ip->{dest_ip} ) );
+        ok( $npe->is_local( $ip->{src_ip} ) + $npe->is_local( $ip->{dest_ip} ), 1 );
     },
 )};
 

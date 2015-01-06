@@ -22,14 +22,17 @@ if( eval q{ use Unix::Process; 1; } ) {
 
     for(1 .. 50) {
         my $npe = Net::Pcap::Easy->new( bytes_to_capture => 4096, dev=>$dev, ipv4_callback=>sub{} );
+        $npe->close;
     }
 
     my $first = Unix::Process->vsz($$);
     for(1 .. 50) {
         my $npe = Net::Pcap::Easy->new( bytes_to_capture => 4096, dev=>$dev, ipv4_callback=>sub{} );
+        $npe->close;
+
         my $last = Unix::Process->vsz($$);
 
-        ok( $last, $first );
+        ok( "$_-$last", "$_-$first" );
         $first = $last;
     }
 

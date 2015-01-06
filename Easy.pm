@@ -108,43 +108,44 @@ sub new {
         Net::Pcap::setfilter( $pcap, $filter ) && die 'ERROR Applying pcap filter';
     }
 
-    $this->{_mcb} = sub {
-        my ($linktype, $header, $packet) = @_;
-
-        # For non-ethernet data link types, construct a
-        # fake ethernet header from the data available.
-        my ($ether, $type);
-        if ($linktype == Net::Pcap::DLT_EN10MB) {
-            $ether = NetPacket::Ethernet->decode($packet);
-            $type = $ether->{type};
-
-        } elsif ($linktype == Net::Pcap::DLT_LINUX_SLL) {
-            use bytes;
-            $type = unpack("n", substr($packet, 2+2+2+8, 2));
-            $ether = NetPacket::Ethernet->decode(
-                    pack("h24 n", "0" x 24, $type) . substr($packet, 16));
-            no bytes;
-
-        } else {
-            die "ERROR Unhandled data link type: " .
-                Net::Pcap::datalink_val_to_name($linktype);
-        }
-        $this->{_pp} ++;
-
-        my $cb;
-
-        return $this->_ipv4( $ether, NetPacket::IP  -> decode($ether->{data}),  $header) if $type == ETH_TYPE_IP;
-        return $this->_arp(  $ether, NetPacket::ARP -> decode($ether->{data}),  $header) if $type == ETH_TYPE_ARP;
-        
-        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
-        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
-        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
-        return $cb->($this, $ether,  $header) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
-
-        return $cb->($this, $ether,  $header) if $cb = $this->{default_callback};
-    };
-
     return $this;
+}
+
+sub _main_callback {
+    my ($this, $linktype, $header, $packet) = @_;
+
+    # For non-ethernet data link types, construct a
+    # fake ethernet header from the data available.
+    my ($ether, $type);
+    if ($linktype == Net::Pcap::DLT_EN10MB) {
+        $ether = NetPacket::Ethernet->decode($packet);
+        $type = $ether->{type};
+
+    } elsif ($linktype == Net::Pcap::DLT_LINUX_SLL) {
+        use bytes;
+        $type = unpack("n", substr($packet, 2+2+2+8, 2));
+        $ether = NetPacket::Ethernet->decode(
+                pack("h24 n", "0" x 24, $type) . substr($packet, 16));
+        no bytes;
+
+    } else {
+        die "ERROR Unhandled data link type: " .
+            Net::Pcap::datalink_val_to_name($linktype);
+    }
+
+    $this->{_pp} ++;
+
+    my $cb;
+
+    return $this->_ipv4( $ether, NetPacket::IP  -> decode($ether->{data}),  $header) if $type == ETH_TYPE_IP;
+    return $this->_arp(  $ether, NetPacket::ARP -> decode($ether->{data}),  $header) if $type == ETH_TYPE_ARP;
+    
+    return $cb->($this, $ether,  $header) if $type == ETH_TYPE_IPv6      and $cb = $this->{ipv6_callback};
+    return $cb->($this, $ether,  $header) if $type == ETH_TYPE_SNMP      and $cb = $this->{snmp_callback};
+    return $cb->($this, $ether,  $header) if $type == ETH_TYPE_PPP       and $cb = $this->{ppp_callback};
+    return $cb->($this, $ether,  $header) if $type == ETH_TYPE_APPLETALK and $cb = $this->{appletalk_callback};
+
+    return $cb->($this, $ether,  $header) if $cb = $this->{default_callback};
 }
 
 sub _icmp {
@@ -221,7 +222,7 @@ sub _arp {
 
 sub loop {
     my $this = shift;
-    my $cb   = shift || $this->{_mcb};
+    my $cb   = shift || sub { _main_callback($this, @_) };
 
     return unless exists $this->{pcap}; # in case we close early
 
