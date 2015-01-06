@@ -31,7 +31,9 @@ my %KNOWN_CALLBACKS = (map {($_=>1)} qw(
 
 sub DESTROY {
     my $this = shift;
-    return $this->close;
+    $this->close;
+    %$this = ();
+    return;
 }
 
 sub close {
